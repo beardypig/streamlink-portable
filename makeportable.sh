@@ -33,13 +33,12 @@ git clone https://github.com/streamlink/streamlink.git ${streamlink_clone_dir}
 pushd "${streamlink_clone_dir}"
 # apply patches to streamlink
 git apply "${root_dir}/rtmpdump_relative_path.patch"
+commit=$(git rev-parse --short HEAD)
 
 # Work out the streamlink version
 # For travis nightly builds generate a version number with commit hash
 STREAMLINK_VERSION=$(grep -oP '__version__ = \"\K[^"]*' src/streamlink/__init__.py)
-if [ -n "${TRAVIS_BRANCH}" ] && [ -z "${TRAVIS_TAG}" ]; then
-    STREAMLINK_VERSION="${STREAMLINK_VERSION}-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT:0:7}"
-fi
+STREAMLINK_VERSION="${STREAMLINK_VERSION}-$(date +%Y%m%d)-${commit}"
 
 popd
 
