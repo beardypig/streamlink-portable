@@ -4,16 +4,10 @@ set -e # quit on error
 
 STREAMLINK_PYTHON_ARCH=${1:-win32}
 STREAMLINK_PYTHON_VERSION=${STREAMLINK_PYTHON_VERSION:-3.5.2}
-STREAMLINK_VERSION=$(python -c 'import streamlink; print(streamlink.__version__)')
 PYTHON_PLATFORM=${STREAMLINK_PYTHON_ARCH}
 
 if [[ $STREAMLINK_PYTHON_ARCH == "amd64" ]]; then
     PYTHON_PLATFORM="win_amd64"
-fi
-
-# For travis nightly builds generate a version number with commit hash
-if [ -n "${TRAVIS_BRANCH}" ] && [ -z "${TRAVIS_TAG}" ]; then
-    STREAMLINK_VERSION="${STREAMLINK_VERSION}-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT:0:7}"
 fi
 
 python_url="https://www.python.org/ftp/python/${STREAMLINK_PYTHON_VERSION}/python-${STREAMLINK_PYTHON_VERSION}-embed-${STREAMLINK_PYTHON_ARCH}.zip"
@@ -39,6 +33,14 @@ git clone https://github.com/streamlink/streamlink.git ${streamlink_clone_dir}
 pushd "${streamlink_clone_dir}"
 # apply patches to streamlink
 git apply "${root_dir}/rtmpdump_relative_path.patch"
+
+# Work out the streamlink version
+# For travis nightly builds generate a version number with commit hash
+STREAMLINK_VERSION=$(grep -oP '__version__ = \"\K[^"]*' src/streamlink/__init__.py)
+if [ -n "${TRAVIS_BRANCH}" ] && [ -z "${TRAVIS_TAG}" ]; then
+    STREAMLINK_VERSION="${STREAMLINK_VERSION}-${TRAVIS_BUILD_NUMBER}-${TRAVIS_COMMIT:0:7}"
+fi
+
 popd
 
 env NO_DEPS=1 pip wheel streamlink -w "${temp_dir}"
@@ -71,6 +73,6 @@ cp -r "${streamlink_clone_dir}/win32/streamlinkrc" "${bundle_dir}/streamlinkrc.d
 gsed -i "s/^#rtmpdump.*/rtmpdump=rtmpdump\\\\rtmpdump.exe/g" "${bundle_dir}/streamlinkrc.default"
 
 pushd "${temp_dir}"
-zip -r "${dist_dir}/streamlink-${STREAMLINK_VERSION}-py${STREAMLINK_PYTHON_VERSION}-${STREAMLINK_PYTHON_ARCH}.zip" "streamlink"
-cp "${dist_dir}/streamlink-${STREAMLINK_VERSION}-py${STREAMLINK_PYTHON_VERSION}-${STREAMLINK_PYTHON_ARCH}.zip" "${dist_dir}/streamlink-latest.zip"
+zip -r "${dist_dir}/streamlink-portable-${STREAMLINK_VERSION}-py${STREAMLINK_PYTHON_VERSION}-${STREAMLINK_PYTHON_ARCH}.zip" "streamlink"
+cp "${dist_dir}/streamlink-portable-${STREAMLINK_VERSION}-py${STREAMLINK_PYTHON_VERSION}-${STREAMLINK_PYTHON_ARCH}.zip" "${dist_dir}/streamlink-portable-latest.zip"
 popd
