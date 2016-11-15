@@ -3,7 +3,7 @@ sudo: false
 python:
 - '3.5'
 before_install:
-- pip install wheel requests
+- pip install -U wheel requests pip
 script:
 - ./makeportable.sh win32
 - ./makeportable.sh amd64
