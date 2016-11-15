@@ -55,7 +55,7 @@ import shutil
 from streamlink_cli.main import main
 # install the streamlinkrc file, if one is not installed
 if not os.path.exists("streamlinkrc"):
-  shutil.copyfile("streamlinkrc.tmp", "streamlinkrc")
+  shutil.copyfile("streamlinkrc.default", "streamlinkrc")
 main()
 EOF
 
