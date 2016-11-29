@@ -24,20 +24,18 @@ mkdir -p "${dist_dir}"
 
 wget "${python_url}" -O "build/temp/python-${STREAMLINK_PYTHON_VERSION}-embed-${STREAMLINK_PYTHON_ARCH}.zip"
 
-pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "35" -d "${temp_dir}" "pycryptodome" "requests"
-
 # remove any old streamlink clone
 rm -rf "${streamlink_clone_dir}"
 git clone https://github.com/streamlink/streamlink.git ${streamlink_clone_dir}
 
 pushd "${streamlink_clone_dir}"
-# apply patches to streamlink
-git apply "${root_dir}/rtmpdump_relative_path.patch"
 commit=$(git rev-parse --short HEAD)
+
+pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "35" -d "${temp_dir}" "pycryptodome==3.4.3" "requests>=1.0,<2.12.0"
 
 # Work out the streamlink version
 # For travis nightly builds generate a version number with commit hash
-STREAMLINK_VERSION=$(grep -oP '__version__ = \"\K[^"]*' src/streamlink/__init__.py)
+STREAMLINK_VERSION=$(python setup.py --version)
 STREAMLINK_VERSION="${STREAMLINK_VERSION}-$(date +%Y%m%d)-${commit}"
 
 popd
@@ -49,27 +47,14 @@ unzip -o "build/temp/streamlink*.whl" -d "${python_dir}"
 unzip -o "build/temp/pycryptodome*.whl" -d "${python_dir}"
 unzip -o "build/temp/requests*.whl" -d "${python_dir}"
 
-cat > "${bundle_dir}/streamlink-script.py" << EOF
-import os.path
-import shutil
-from streamlink_cli.main import main
-# install the streamlinkrc file, if one is not installed
-if not os.path.exists("streamlinkrc"):
-  shutil.copyfile("streamlinkrc.default", "streamlinkrc")
-main()
-EOF
-
-cat > "${bundle_dir}/streamlink.bat" << EOF
-@echo off
-pushd %~dp0
-"python\python.exe" "streamlink-script.py" %* --config "streamlinkrc"
-EOF
+cp "${root_dir}/streamlink-script.py" "${bundle_dir}/streamlink-script.py"
+cp "${root_dir}/streamlink.bat" "${bundle_dir}/streamlink.bat"
 
 mkdir -p "${bundle_dir}/rtmpdump"
 cp -r "${streamlink_clone_dir}/win32/rtmpdump/"* "${bundle_dir}/rtmpdump"
 cp -r "${streamlink_clone_dir}/win32/streamlinkrc" "${bundle_dir}/streamlinkrc.default"
 
-sed -i "s/^#rtmpdump.*/rtmpdump=rtmpdump\\\\rtmpdump.exe/g" "${bundle_dir}/streamlinkrc.default"
+sed -i "s/^rtmpdump=.*/rtmpdump=rtmpdump\\\\rtmpdump.exe/g" "${bundle_dir}/streamlinkrc.default"
 
 pushd "${temp_dir}"
 zip -r "${dist_dir}/streamlink-portable-${STREAMLINK_VERSION}-py${STREAMLINK_PYTHON_VERSION}-${STREAMLINK_PYTHON_ARCH}.zip" "streamlink"
