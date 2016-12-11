@@ -6,7 +6,7 @@ STREAMLINK_PYTHON_ARCH=${1:-win32}
 STREAMLINK_PYTHON_VERSION=3.5.2
 PYTHON_PLATFORM=${STREAMLINK_PYTHON_ARCH}
 
-if [[ $STREAMLINK_PYTHON_ARCH == "amd64" ]]; then
+if [[ "${STREAMLINK_PYTHON_ARCH}" == "amd64" ]]; then
     PYTHON_PLATFORM="win_amd64"
 fi
 
@@ -45,7 +45,7 @@ env NO_DEPS=1 pip wheel streamlink -w "${temp_dir}"
 
 unzip -o "build/temp/python-${STREAMLINK_PYTHON_VERSION}-embed-${STREAMLINK_PYTHON_ARCH}.zip" -d "${python_dir}"
 # include the Windows 10 Universal Runtime
-unzip -o "msvcrt_x86.zip" -d "${python_dir}"
+unzip -o "msvcrt_${PYTHON_PLATFORM}.zip" -d "${python_dir}"
 
 unzip -o "build/temp/streamlink*.whl" -d "${packages_dir}"
 unzip -o "build/temp/pycryptodome*.whl" -d "${packages_dir}"
