@@ -37,7 +37,8 @@ pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-vers
 # Work out the streamlink version
 # For travis nightly builds generate a version number with commit hash
 STREAMLINK_VERSION=$(python setup.py --version)
-STREAMLINK_VERSION="${STREAMLINK_VERSION}-$(date +%Y%m%d)-${commit}"
+sdate=$(date "+%Y%m%d" -d @$(git show -s --format="%ct" ${commit}))
+STREAMLINK_VERSION="${STREAMLINK_VERSION}-${sdate}-${commit}"
 
 popd
 
