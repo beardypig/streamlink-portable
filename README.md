@@ -16,3 +16,10 @@ The `streamlinkrc` file is read from the same directory as the `streamlink.bat` 
 ## Building the zip files under Linux/macOS
 
 - Clone this repo and execute the `makeportable.sh` script. 
+
+
+## Changelog
+
+### 2017-01-11
+
+ * Updated to include ffmpeg
