@@ -33,6 +33,7 @@ pushd "${streamlink_clone_dir}"
 commit=$(git rev-parse --short HEAD)
 
 pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "35" --abi "cp35m" -d "${temp_dir}" "pycryptodome==3.4.3" "requests>=1.0,!=2.12.0,!=2.12.1,<3.0"
+pip install -t "${packages_dir}" "iso-639" "iso3166"
 
 # Work out the streamlink version
 # For travis nightly builds generate a version number with commit hash
