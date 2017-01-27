@@ -20,6 +20,12 @@ The `streamlinkrc` file is read from the same directory as the `streamlink.bat` 
 
 ## Changelog
 
+### 2017-01-27
+
+ * Fixed bug with ffmpeg/rtmpdump paths being set on the command line
+ * The batch script doesn't change directory any more
+ * Added iso3166 and iso-639 packages 
+
 ### 2017-01-11
 
  * Updated to include ffmpeg
