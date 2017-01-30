@@ -33,7 +33,7 @@ pushd "${streamlink_clone_dir}"
 commit=$(git rev-parse --short HEAD)
 
 pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "35" --abi "cp35m" -d "${temp_dir}" "pycryptodome==3.4.3" "requests>=1.0,!=2.12.0,!=2.12.1,<3.0"
-pip install -t "${packages_dir}" "iso-639" "iso3166"
+pip install -t "${packages_dir}" "iso-639" "iso3166" "setuptools"
 
 # Work out the streamlink version
 # For travis nightly builds generate a version number with commit hash
@@ -41,18 +41,19 @@ STREAMLINK_VERSION=$(python setup.py --version)
 sdate=$(date "+%Y%m%d" -d @$(git show -s --format="%ct" ${commit}))
 STREAMLINK_VERSION="${STREAMLINK_VERSION}-${sdate}-${commit}"
 
+env NO_DEPS=1 python "setup.py" sdist -d "${temp_dir}"
+
 popd
 
-env NO_DEPS=1 pip wheel streamlink -w "${temp_dir}"
 
 unzip -o "build/temp/python-${STREAMLINK_PYTHON_VERSION}-embed-${STREAMLINK_PYTHON_ARCH}.zip" -d "${python_dir}"
 # include the Windows 10 Universal Runtime
 unzip -o "msvcrt_${PYTHON_PLATFORM}.zip" -d "${python_dir}"
 
-unzip -o "build/temp/streamlink*.whl" -d "${packages_dir}"
 unzip -o "build/temp/pycryptodome*.whl" -d "${packages_dir}"
 unzip -o "build/temp/requests*.whl" -d "${packages_dir}"
 
+cp -r "${streamlink_clone_dir}/src/"* "${bundle_dir}/packages"
 cp "${root_dir}/streamlink-script.py" "${bundle_dir}/streamlink-script.py"
 cp "${root_dir}/streamlink.bat" "${bundle_dir}/streamlink.bat"
 cp "${root_dir}/NOTICE" "${bundle_dir}/NOTICE.txt"

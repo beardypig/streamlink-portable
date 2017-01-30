@@ -15,6 +15,8 @@ The `streamlinkrc` file is read from the same directory as the `streamlink.bat` 
 
 ## Building the zip files under Linux/macOS
 
+NB. `sed` must be `gnu-sed`
+
 - Clone this repo and execute the `makeportable.sh` script. 
 
 
