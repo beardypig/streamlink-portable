@@ -7,14 +7,27 @@ before_install:
 script:
 - ./scripts/makeportable.sh master win32
 - ./scripts/makeportable.sh master amd64
+- if [ -n "${TRAVIS_TAG}" ]; then ./scripts/makeportable.sh $TRAVIS_TAG win32; fi
+- if [ -n "${TRAVIS_TAG}" ]; then ./scripts/makeportable.sh $TRAVIS_TAG amd64; fi
 deploy:
   - provider: s3
     skip_cleanup: true
-    local_dir: dist/
+    local_dir: dist/nightly
     bucket: streamlink-portable
     upload-dir: nightly
     on:
       branch: master
+    secret_access_key:
+      secure: Tu+620haTds+lV0ycSi+xPZI46oFxBcC03CXO1Si6QkB44bx3zrYna7vojKfFFow78uoe3oBuRNKDh/MtAQQ/aH4rmqkOrDLRECyOqb3A3kVy20rTZdCiCVTDsHfvOXZo87/a4/cjiZm3B+vVqoVzxEdlzA93ofdKMCgU6OiSF1KZmdQ/i0T4hbCzhRsUGR8LEeug7s8mvvLx9/rv1rfQ4Z9anHovFvjgcJkhCQE4DC+y+nj0VvGMNLHnUbECa1v6Z07SpoFqwV7IrMH48oo2KvDb0JK9YssC/EWEtwG06eITPU7xMsUWeTUcp2rv7t8OEtQ6X+9YyWHoC7ljEwjxTg4lsrAPKV4jtW9N+tj/lmH2hKSmgmgUdNZ+tbJARqnuvP34hxf3VRvQKgqXUkogRv8fBeBCxh8MNWpQcAoNlDBh/B2mdujXlgTiy/0wHOQl/5hVUIqIdD/53OAJonvm6cKKgDr8uTg9d1a7S7gU1LwqIHNxalRLhQUUiuUzGDYCUyLsyg6kguEuWzgX3ky8dbnD41pip9SRJqaZJSh1CSMfduTpBNG7DEfDnFi8Xg+fx6/yNoUjDJQv4gcw14ZANIMzP5W1vxrqkZ04dyCA3sIq1DS/kHqcV5QsVn7dW2bnF5DIdTaShAmPOEk0x4HwWLqAl4UlCHgfU63av79PO4=
+    access_key_id:
+      secure: oGgHiDOjoKkEIp4rU0uQCNABOt5pCpQRDNxgyH+QsLj3Yoil8zjQjybTpB7iaR4vvofbF3ZjvecmwRva28qPC/hmSFpXhBpuyQuRTvlszXvjF69tQ36BIlOiW4mCCj2zDKQqRJoinYg03Xa/yeBrIw34z8MB0SoAYKM0M7qQ+66umy1NZ+QDnfZzj1Flvii9HvQ0MPqCENMXPl6mm+LDA0g5qxfrFnHJDsqszcttFSvDiy47/7SpotbObTnH5PLgCdQTKlOZgT4HHAfGWRTYLxVxA1diFRuT5kIWE8G9eMMvwv01Yt3UgeQTktl0MRpTwkIZMOz0FtnsD3OndaGh/laUbB0RoE8oSlPIpoGPHYDu1GiByvvinUltI11rYO2F+a587Ue6DZi0W3CZ8RKAxvsCF1IfjFmYkl/p+pKmI4qyZEffGcB4cu2RyBV3dZYtBYJ+fa4kGi1YWOQR9+qwfTVFwn040XbVe2z2yO37UPjzS4Po2XGn87nEefh+S9C/X4+g0EoMDxqwoVrAQARnXAIr01YkJDzYPvT5exF0UqA33E6M1qMW+Q2Q0AHg+zErvhZZqmTEra7ETX/YceYjkaJkG1Oz7RGL+efg8DW43BU6O7jeljCcwuD64xy9x0Qpr/T2936dFpb1FXVnJt4ezTvYK7u55VgiWVmo97fpByA=
+  - provider: s3
+    skip_cleanup: true
+    local_dir: dist/stable
+    bucket: streamlink-portable
+    upload-dir: stable
+    on:
+      tags: true
     secret_access_key:
       secure: Tu+620haTds+lV0ycSi+xPZI46oFxBcC03CXO1Si6QkB44bx3zrYna7vojKfFFow78uoe3oBuRNKDh/MtAQQ/aH4rmqkOrDLRECyOqb3A3kVy20rTZdCiCVTDsHfvOXZo87/a4/cjiZm3B+vVqoVzxEdlzA93ofdKMCgU6OiSF1KZmdQ/i0T4hbCzhRsUGR8LEeug7s8mvvLx9/rv1rfQ4Z9anHovFvjgcJkhCQE4DC+y+nj0VvGMNLHnUbECa1v6Z07SpoFqwV7IrMH48oo2KvDb0JK9YssC/EWEtwG06eITPU7xMsUWeTUcp2rv7t8OEtQ6X+9YyWHoC7ljEwjxTg4lsrAPKV4jtW9N+tj/lmH2hKSmgmgUdNZ+tbJARqnuvP34hxf3VRvQKgqXUkogRv8fBeBCxh8MNWpQcAoNlDBh/B2mdujXlgTiy/0wHOQl/5hVUIqIdD/53OAJonvm6cKKgDr8uTg9d1a7S7gU1LwqIHNxalRLhQUUiuUzGDYCUyLsyg6kguEuWzgX3ky8dbnD41pip9SRJqaZJSh1CSMfduTpBNG7DEfDnFi8Xg+fx6/yNoUjDJQv4gcw14ZANIMzP5W1vxrqkZ04dyCA3sIq1DS/kHqcV5QsVn7dW2bnF5DIdTaShAmPOEk0x4HwWLqAl4UlCHgfU63av79PO4=
     access_key_id:
