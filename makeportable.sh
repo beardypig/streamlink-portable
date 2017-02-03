@@ -27,7 +27,7 @@ wget "${python_url}" -c -O "build/temp/python-${STREAMLINK_PYTHON_VERSION}-embed
 
 # remove any old streamlink clone
 rm -rf "${streamlink_clone_dir}"
-git clone https://github.com/streamlink/streamlink.git ${streamlink_clone_dir}
+git clone --depth=50 --branch=master https://github.com/streamlink/streamlink.git ${streamlink_clone_dir}
 
 pushd "${streamlink_clone_dir}"
 commit=$(git rev-parse --short HEAD)
