@@ -61,11 +61,12 @@ cp "${root_dir}/NOTICE" "${bundle_dir}/NOTICE.txt"
 mkdir -p "$bundle_dir/rtmpdump" "$bundle_dir/ffmpeg"
 cp -r "${streamlink_clone_dir}/win32/rtmpdump/"* "${bundle_dir}/rtmpdump"
 cp -r "${streamlink_clone_dir}/win32/ffmpeg/"* "${bundle_dir}/ffmpeg"
-cp -r "${streamlink_clone_dir}/win32/streamlinkrc" "${bundle_dir}/streamlinkrc.default"
+cp -r "${streamlink_clone_dir}/win32/streamlinkrc" "${bundle_dir}/streamlinkrc.template"
 cp -r "${streamlink_clone_dir}/win32/LICENSE.txt" "${bundle_dir}/LICENSE.txt"
 
-sed -i "s/^rtmpdump=.*/#rtmpdump=/g" "${bundle_dir}/streamlinkrc.default"
-sed -i "s/^ffmpeg-ffmpeg=.*/#ffmpeg-ffmpeg=/g" "${bundle_dir}/streamlinkrc.default"
+# remove the rtmpdump and ffmpeg template lines
+sed -i "/^rtmpdump=.*/d" "${bundle_dir}/streamlinkrc.template"
+sed -i "/^ffmpeg-ffmpeg=.*/d" "${bundle_dir}/streamlinkrc.template"
 
 pushd "${temp_dir}"
 zip -r "${dist_dir}/streamlink-portable-${STREAMLINK_VERSION}-py${STREAMLINK_PYTHON_VERSION}-${STREAMLINK_PYTHON_ARCH}.zip" "streamlink"
