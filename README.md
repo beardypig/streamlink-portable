@@ -7,6 +7,10 @@ The latest versions of the portable zips can be downloaded here:
 - [streamlink-portable-latest-win32.zip](https://s3.amazonaws.com/streamlink-portable/nightly/streamlink-portable-latest-win32.zip)
 - [streamlink-portable-latest-amd64.zip](https://s3.amazonaws.com/streamlink-portable/nightly/streamlink-portable-latest-amd64.zip)
 
+A stable version is also available, based on the `0.3.0` tag of streamlink:
+- [streamlink-portable-0.3.0-py3.5.2-win32.zip](https://s3.amazonaws.com/streamlink-portable/stable/streamlink-portable-0.3.0-py3.5.2-win32.zip)
+- [streamlink-portable-0.3.0-py3.5.2-amd64.zip](https://s3.amazonaws.com/streamlink-portable/stable/streamlink-portable-0.3.0-py3.5.2-amd64.zip)
+
 To install simply unzip the zip file.
 
 A `streamlink.bat` is included in the zip file so that you can easily execute `streamlink`. 
@@ -25,6 +29,7 @@ NB. `sed` must be `gnu-sed`
 ### 2017-02-03
 
  * Added build trigger script that is running every 5 minutes to trigger a travis build
+ * Added stable build based on tags.
 
 ### 2017-01-27
 
