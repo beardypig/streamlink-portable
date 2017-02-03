@@ -22,6 +22,10 @@ NB. `sed` must be `gnu-sed`
 
 ## Changelog
 
+### 2017-02-03
+
+ * Added build trigger script that is running every 5 minutes to trigger a travis build
+
 ### 2017-01-27
 
  * Fixed bug with ffmpeg/rtmpdump paths being set on the command line
