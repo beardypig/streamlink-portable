@@ -5,10 +5,8 @@ python:
 before_install:
 - pip install -U wheel requests pip
 script:
-- ./scripts/makeportable.sh master win32
-- ./scripts/makeportable.sh master amd64
-- if [ -n "${TRAVIS_TAG}" ]; then ./scripts/makeportable.sh $TRAVIS_TAG win32; fi
-- if [ -n "${TRAVIS_TAG}" ]; then ./scripts/makeportable.sh $TRAVIS_TAG amd64; fi
+- ./scripts/makeportable.sh "${TRAVIS_TAG:-master}" win32
+- ./scripts/makeportable.sh "${TRAVIS_TAG:-master}" amd64
 deploy:
   - provider: s3
     skip_cleanup: true
