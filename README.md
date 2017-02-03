@@ -17,7 +17,7 @@ The `streamlinkrc` file is read from the same directory as the `streamlink.bat` 
 
 NB. `sed` must be `gnu-sed`
 
-- Clone this repo and execute the `makeportable.sh` script. 
+- Clone this repo and execute the `scripts/makeportable.sh` script. 
 
 
 ## Changelog

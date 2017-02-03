@@ -5,8 +5,8 @@ python:
 before_install:
 - pip install -U wheel requests pip
 script:
-- ./makeportable.sh win32
-- ./makeportable.sh amd64
+- ./scripts/makeportable.sh master win32
+- ./scripts/makeportable.sh master amd64
 deploy:
   - provider: s3
     skip_cleanup: true
