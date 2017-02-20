@@ -26,6 +26,10 @@ NB. `sed` must be `gnu-sed`
 
 ## Changelog
 
+### 2017-02-12
+
+ * Release stable `0.3.2`
+
 ### 2017-02-03
 
  * Added build trigger script that is running every 5 minutes to trigger a travis build
