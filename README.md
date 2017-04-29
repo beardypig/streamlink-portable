@@ -7,9 +7,9 @@ The latest versions of the portable zips can be downloaded here:
 - [streamlink-portable-latest-win32.zip](https://s3.amazonaws.com/streamlink-portable/nightly/streamlink-portable-latest-win32.zip)
 - [streamlink-portable-latest-amd64.zip](https://s3.amazonaws.com/streamlink-portable/nightly/streamlink-portable-latest-amd64.zip)
 
-A stable version is also available, based on the `0.3.2` tag of streamlink:
-- [streamlink-portable-0.3.2-py3.5.2-win32.zip](https://s3.amazonaws.com/streamlink-portable/stable/streamlink-portable-0.3.2-py3.5.2-win32.zip)
-- [streamlink-portable-0.3.2-py3.5.2-amd64.zip](https://s3.amazonaws.com/streamlink-portable/stable/streamlink-portable-0.3.2-py3.5.2-amd64.zip)
+A stable version is also available, based on the `0.5.0` tag of streamlink:
+- [streamlink-portable-0.5.0-py3.5.2-win32.zip](https://s3.amazonaws.com/streamlink-portable/stable/streamlink-portable-0.5.0-py3.5.2-win32.zip)
+- [streamlink-portable-0.5.0-py3.5.2-amd64.zip](https://s3.amazonaws.com/streamlink-portable/stable/streamlink-portable-0.5.0-py3.5.2-amd64.zip)
 
 To install simply unzip the zip file.
 
@@ -25,6 +25,10 @@ NB. `sed` must be `gnu-sed`
 
 
 ## Changelog
+
+### 2017-03-29
+
+ * Release stable `0.5.0`, lagged behind the official release.
 
 ### 2017-02-12
 
