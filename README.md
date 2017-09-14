@@ -1,15 +1,15 @@
 # Streamlink Portable
 A script to build a portable version of Streamlink for Windows.
 
-The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and come bundled with Python 3.5.2. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version).
+The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and come bundled with Python 3.5.4. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version).
 
 The latest versions of the portable zips can be downloaded here:
 - [streamlink-portable-latest-win32.zip](https://dl.bintray.com/beardypig/streamlink-portable/streamlink-portable-latest-win32.zip)
 - [streamlink-portable-latest-amd64.zip](https://dl.bintray.com/beardypig/streamlink-portable/streamlink-portable-latest-amd64.zip)
 
-A stable version is also available, based on the `0.7.0` tag of streamlink:
-- [streamlink-portable-0.7.0-py3.5.2-win32.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.7.0/streamlink-portable-0.7.0-py3.5.2-win32.zip)
-- [streamlink-portable-0.7.0-py3.5.2-amd64.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.7.0/streamlink-portable-0.7.0-py3.5.2-amd64.zip)
+A stable version is also available, based on the `0.8.1` tag of streamlink:
+- [streamlink-portable-0.8.1-py3.5.2-win32.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.8.1/streamlink-portable-0.8.1-py3.5.4-win32.zip)
+- [streamlink-portable-0.8.1-py3.5.2-amd64.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.8.1/streamlink-portable-0.8.1-py3.5.4-amd64.zip)
 
 To install simply unzip the zip file.
 
@@ -25,6 +25,12 @@ NB. `sed` must be `gnu-sed`
 
 
 ## Changelog
+
+### 2017-09-14
+
+* Release stable `0.8.1`.
+* Resolved issue with missing `websocket` and `PySocks` modules.
+* Update to Python 3.5.4.
 
 ### 2017-07-05
 
