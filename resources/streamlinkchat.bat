@@ -1,4 +1,4 @@
-goto="Streamlink.Init" /* input + quality dialogs and hidecmd launcher
+goto="Streamlink.Init" /* input + quality dialogs and hidecmd launcher + chat
 :: save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
 :: streamlink                          = with no parameters will show stream name input-dialog 
 :: streamlink esl_dota2                = with just the url or twitch stream name will show quality choice-dialog  
@@ -14,7 +14,7 @@ if "%2"=="" ( echo  Input empty, insert url & call :input "STREAMLINK: Insert ur
 if not defined STREAM ( echo  [!] No stream url & timeout /t 4 & exit/b ) else echo  "%STREAM%" - selecting quality, please wait..
 if "%STREAM:/=%"=="%STREAM%" echo  Input not complete url, assume "twitch.tv/%STREAM%" & set "STREAM=http://twitch.tv/%STREAM%" 
 if /i "%STREAM:+chat=%"=="%STREAM%" ( set "OPEN_CHAT=" ) else set "STREAM=%STREAM:+chat=%" & set "OPEN_CHAT=1"
-if defined OPEN_CHAT start %STREAM%/chat
+start %STREAM%/chat
 if "%3"=="" ( set "QLIST=" & set "QUALITY=" ) else set "QLIST=" & set "QUALITY=%~3" 
 if "%3"=="" for /f "tokens=2* delims=:" %%# in ('%STREAMLINK% %stream% ^| find.exe "Available" 2^>nul') do set "QLIST=%%#"
 if defined QLIST call set "QLIST=%%QLIST:)=%%" &call set "QLIST=%%QLIST:(=,%%" &call set "QLIST=%%QLIST: =%%" 
