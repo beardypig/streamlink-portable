@@ -10,16 +10,18 @@ set "RTMPDUMP=--rtmp-rtmpdump rtmpdump\rtmpdump.exe"
 set "FFMPEG=--ffmpeg-ffmpeg ffmpeg\ffmpeg.exe"
 set "STREAMLINK=python\python.exe streamlink-script.py %FFMPEG% %RTMPDUMP% %CONFIG%"
 ::
-if "%2"=="" ( echo  Input empty, insert url & call :input "STREAMLINK: Insert url" "OK" STREAM ) else set "STREAM=%~2"
-if not defined STREAM ( echo  [!] No stream url & timeout /t 4 & exit/b ) else echo  "%STREAM%" - selecting quality, please wait..
-if "%STREAM:/=%"=="%STREAM%" echo  Input not complete url, assume "twitch.tv/%STREAM%" & set "STREAM=http://twitch.tv/%STREAM%" 
-if /i "%STREAM:+chat=%"=="%STREAM%" ( set "OPEN_CHAT=" ) else set "STREAM=%STREAM:+chat=%" & set "OPEN_CHAT=1"
-start %STREAM%/chat
-if "%3"=="" ( set "QLIST=" & set "QUALITY=" ) else set "QLIST=" & set "QUALITY=%~3" 
-if "%3"=="" for /f "tokens=2* delims=:" %%# in ('%STREAMLINK% %stream% ^| find.exe "Available" 2^>nul') do set "QLIST=%%#"
-if defined QLIST call set "QLIST=%%QLIST:)=%%" &call set "QLIST=%%QLIST:(=,%%" &call set "QLIST=%%QLIST: =%%" 
-if defined QLIST echo  Stream available in: %QLIST% & call :choice "%STREAM%" "%QLIST%" QUALITY 
-%STREAMLINK% "%STREAM%" "%QUALITY%,720p,480p,best"
+for /f "tokens=1,2,3* delims= " %%T in ("%*") do set "URL=%%~U" & set "STREAM=%%~V"
+if not defined URL echo  Input empty, insert url & call :input "STREAMLINK: Insert url" "OK" URL
+if not defined URL ( echo  [X] No stream url & timeout /t 4 & exit/b ) else echo  "%URL%" - selecting quality, please wait..
+if "%URL:/=%"=="%URL%" echo  Input not complete url, assume "twitch.tv/%URL%" & set "URL=http://twitch.tv/%URL%" 
+if /i "%URL:+chat=%"=="%URL%" ( set "OPEN_CHAT=" ) else set "URL=%URL:+chat=%" & set "OPEN_CHAT=1"
+start %URL%/chat
+set "STREAMLINK_LIST=%STREAMLINK% "%URL%" ^| find.exe /i "Available" 2^>nul" & set "LIST=" 
+if not defined STREAM for /f "usebackq tokens=2* delims=:" %%A in (`%STREAMLINK_LIST%`) do set "LIST=%%A" 
+if defined LIST call set "LIST=%%LIST:(=,%%" &call set "LIST=%%LIST:)=%%" &call set "LIST=%%LIST: =%%" 
+if defined LIST echo  Available streams: %LIST% & call :choice "%URL%" "%LIST%" STREAM
+if defined LIST if not defined STREAM set "STREAMLINK=echo  [X] No choice selected & rem"
+%STREAMLINK% "%URL%" "%STREAM%,720p,480p,best"
 if "%TSTPATH%"=="%path%" ( reg add HKEY_CURRENT_USER\Environment /v PATH /t REG_SZ /f /d "%path%;%~dp0;" >nul 2>nul &setx OS %OS% )
 taskkill /t /f /im mshta.exe >nul 2>nul & exit/b 
 ::----------------------------------------------------------------------------------------------------------------------------------
