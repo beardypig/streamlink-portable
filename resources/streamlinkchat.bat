@@ -1,8 +1,8 @@
 goto="Streamlinkchat.Init" /* input + quality dialogs and hidecmd launcher +chat
-:: Save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
-:: streamlink                          = with no parameters shows url input-dialog 
-:: streamlink esl_dota2                = with just the url or twitch channel name shows stream choice-dialog  
-:: streamlink twitch.tv/esl_dota2 720p = with both url or twitch channel name and stream launches video player directly 
+:: Save as Streamlinkchat.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
+:: streamlinkchat                          = with no parameters shows url input-dialog 
+:: streamlinkchat esl_dota2                = with just the url or twitch channel name shows stream choice-dialog  
+:: streamlinkchat twitch.tv/esl_dota2 720p = with both url or twitch channel name and stream launches video player directly 
 :: Detects options like --twitch-oauth-authenticate in url input-dialog and pass it as-is  
 :"Streamlinkchat.Batch"
 rem set "TWITCH_OAUTH_TOKEN=--twitch-oauth-token YourTwitchOauthToken" 
