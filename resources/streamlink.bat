@@ -1,4 +1,4 @@
-goto="Streamlink.Init" /* input + quality dialogs and hidecmd launcher
+goto="Streamlink.Init" /* url input + stream choice dialogs and hidecmd launcher
 :: Save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
 :: streamlink                          = with no parameters shows url input-dialog 
 :: streamlink esl_dota2                = with just the url or twitch channel name shows stream choice-dialog  
