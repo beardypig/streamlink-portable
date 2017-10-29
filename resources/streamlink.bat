@@ -1,20 +1,22 @@
-goto="Streamlink.Init" /* input + quality dialogs and hidecmd launcher
-:: save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
-:: streamlink                          = with no parameters will show stream name input-dialog 
-:: streamlink esl_dota2                = with just the url or twitch stream name will show quality choice-dialog  
-:: streamlink twitch.tv/esl_dota2 720p = with both url or twitch stream name and quality will launch video player directly 
+goto="Streamlink.Init" /* input + quality dialogs and hidecmd launcher v6
+:: Save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
+:: streamlink                          = with no parameters shows url input-dialog 
+:: streamlink esl_dota2                = with just the url or twitch channel name shows stream choice-dialog  
+:: streamlink twitch.tv/esl_dota2 720p = with both url or twitch channel name and stream launches video player directly 
+:: Detects options like --twitch-oauth-authenticate in url input-dialog and pass it as-is  
 :"Streamlink.Batch"
 rem set "TWITCH_OAUTH_TOKEN=--twitch-oauth-token YourTwitchOauthToken" 
 set "CONFIG=--config streamlinkrc %TWITCH_OAUTH_TOKEN%" 
 set "RTMPDUMP=--rtmp-rtmpdump rtmpdump\rtmpdump.exe"
 set "FFMPEG=--ffmpeg-ffmpeg ffmpeg\ffmpeg.exe"
 set "STREAMLINK=python\python.exe streamlink-script.py %FFMPEG% %RTMPDUMP% %CONFIG%"
-::
-for /f "tokens=1,2,3* delims= " %%T in ("%*") do set "URL=%%~U" & set "STREAM=%%~V"
+for /f "tokens=1,2,3* delims= " %%T in ("%*") do set "URL=%%~U" & set "STREAM=%%~V" &rem 1st token was added by HideCmd: init
 if not defined URL echo  Input empty, insert url & call :input "STREAMLINK: Insert url" "OK" URL
-if not defined URL ( echo  [X] No stream url & timeout /t 4 & exit/b ) else echo  "%URL%" - selecting quality, please wait..
-if "%URL:/=%"=="%URL%" echo  Input not complete url, assume "twitch.tv/%URL%" & set "URL=http://twitch.tv/%URL%" 
-if /i "%URL:+chat=%"=="%URL%" ( set "OPEN_CHAT=" ) else set "URL=%URL:+chat=%" & set "OPEN_CHAT=1"
+if not defined URL echo  [X] Input empty & timeout /t 4 & exit/b
+if "%URL:~0,2%"=="--" echo  Input has options, pass as-is & %STREAMLINK% %URL% & exit/b
+if "%URL: --=%"=="%URL%" ( echo  %URL% loading, wait.. ) else echo  Input has options, pass as-is & %STREAMLINK% %URL% & exit/b 
+if "%URL:/=%"=="%URL%" echo  Input non-url, assume "twitch.tv/%URL%" & set "URL=http://twitch.tv/%URL%" 
+if /i "%URL:~-5%"=="+chat" ( set "URL=%URL:~-5%" & set "OPEN_CHAT=1" ) else set "OPEN_CHAT="
 if defined OPEN_CHAT start %URL%/chat
 set "STREAMLINK_LIST=%STREAMLINK% "%URL%" ^| find.exe /i "Available" 2^>nul" & set "LIST=" 
 if not defined STREAM for /f "usebackq tokens=2* delims=:" %%A in (`%STREAMLINK_LIST%`) do set "LIST=%%A" 
@@ -22,8 +24,9 @@ if defined LIST call set "LIST=%%LIST:(=,%%" &call set "LIST=%%LIST:)=%%" &call 
 if defined LIST echo  Available streams: %LIST% & call :choice "%URL%" "%LIST%" STREAM
 if defined LIST if not defined STREAM set "STREAMLINK=echo  [X] No choice selected & rem"
 %STREAMLINK% "%URL%" "%STREAM%,720p,480p,best"
+call set "TSTPATH=%%path:%~dp0=%%" & rem add Streamlink directory to current user environment without duplicating entries
 if "%TSTPATH%"=="%path%" ( reg add HKEY_CURRENT_USER\Environment /v PATH /t REG_SZ /f /d "%path%;%~dp0;" >nul 2>nul &setx OS %OS% )
-taskkill /t /f /im mshta.exe >nul 2>nul & exit/b 
+exit/b
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlink.Utils"
 :input %1:title %2:button %3:output_variable                                      ||:example: call :input "Enter stream" "OK" result
@@ -46,7 +49,7 @@ set "h=%h% <body onload='%~2()'><script language='javascript' src='file://%~f0'>
 endlocal & set "%~2=%h%" & exit /b                                                    
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlink.Init" Hybrid initialization with self-restart and HideCmd - script uses mshta windows instead
-@echo off & setlocal & chcp 65001 >NUL & set "PYTHONIOENCODING=cp65001" & pushd "%~dp0" & call set "TSTPATH=%%path:%~dp0=%%"
+@echo off & setlocal & chcp 65001 >NUL & set "PYTHONIOENCODING=cp65001" & pushd "%~dp0"
 @if not "%1"=="init" ( wscript //nologo /E:JScript "%~f0" HideCmd "init %*" & exit/b ) else goto="Streamlink.Batch"    
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlink.JScript" */
