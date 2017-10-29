@@ -1,4 +1,4 @@
-goto="Streamlinkchat.Init" /* input + quality dialogs and hidecmd launcher +chat v6
+goto="Streamlinkchat.Init" /* input + quality dialogs and hidecmd launcher +chat
 :: Save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
 :: streamlink                          = with no parameters shows url input-dialog 
 :: streamlink esl_dota2                = with just the url or twitch channel name shows stream choice-dialog  
@@ -50,7 +50,7 @@ endlocal & set "%~2=%h%" & exit /b
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlinkchat.Init" Hybrid initialization with self-restart and HideCmd - script uses mshta windows instead
 @echo off & setlocal & chcp 65001 >NUL & set "PYTHONIOENCODING=cp65001" & pushd "%~dp0"
-@if not "%1"=="init" ( wscript //nologo /E:JScript "%~f0" HideCmd "init %*" & exit/b ) else goto="Streamlink.Batch"    
+@if not "%1"=="init" ( wscript //nologo /E:JScript "%~f0" HideCmd "init %*" & exit/b ) else goto="Streamlinkchat.Batch"    
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlinkchat.JScript" */
 function input(){
