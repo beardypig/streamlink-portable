@@ -1,29 +1,32 @@
-goto="Streamlink.Init" /* url input + stream choice dialogs and hidecmd launcher
-:: Save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch, enter:
-:: streamlink                          = with no parameters shows url input-dialog 
-:: streamlink esl_dota2                = with just the url or twitch channel name shows stream choice-dialog  
-:: streamlink twitch.tv/esl_dota2 720p = with both url or twitch channel name and stream launches video player directly 
-:: Detects options like --twitch-oauth-authenticate in url input-dialog and pass it as-is  
+goto="Streamlink.Init" /* 
+::     url input + stream choice dialogs and hidecmd launcher
+:: Save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch
+:: streamlink                            = with no parameters shows url input-dialog 
+:: streamlink dreamleague                = with just the url or twitch channel name shows stream choice-dialog  
+:: streamlink twitch.tv/dreamleague 720p = with both url and stream choice launches video player directly 
+:: Detects options like --help or --twitch-oauth-authenticate in url input-dialog and shows cmd window   
 :"Streamlink.Batch"
 rem set "TWITCH_OAUTH_TOKEN=--twitch-oauth-token YourTwitchOauthToken" 
 set "CONFIG=--config streamlinkrc %TWITCH_OAUTH_TOKEN%" 
+set "DEFAULT=--default-stream "720p,480p,best""
 set "RTMPDUMP=--rtmp-rtmpdump rtmpdump\rtmpdump.exe"
-set "FFMPEG=--ffmpeg-ffmpeg ffmpeg\ffmpeg.exe"
+set "PYTHONIOENCODING=cp65001" & chcp 65001 >NUL
 set "STREAMLINK=python\python.exe streamlink-script.py %FFMPEG% %RTMPDUMP% %CONFIG%"
-for /f "tokens=1,2,3* delims= " %%T in ("%*") do set "URL=%%~U" & set "STREAM=%%~V" &rem 1st token was added by HideCmd: init
+set "URL=%~1"
+set "STREAM=%~2"
 if not defined URL echo  Input empty, insert url & call :input "STREAMLINK: Insert url" "OK" URL
 if not defined URL echo  [X] Input empty & timeout /t 4 & exit/b
-if "%URL:~0,2%"=="--" echo  Input has options, pass as-is & %STREAMLINK% %URL% & exit/b
-if "%URL: --=%"=="%URL%" ( echo  %URL% loading, wait.. ) else echo  Input has options, pass as-is & %STREAMLINK% %URL% & exit/b 
+if /i "%URL:~0,2%"=="--" echo  Input contains options & call :showcmd cmd /k %STREAMLINK% %DEFAULT% %URL% & exit/b
+if "%URL: --=%"=="%URL%" ( echo  %URL% loading, wait.. ) else call :showcmd cmd /k %STREAMLINK% %DEFAULT% %URL% & exit/b 
+if /i "%URL:~-5%"=="+chat" ( set "URL=%URL:~0,-5%" & set "OPEN_CHAT=1" ) else set "OPEN_CHAT="
 if "%URL:/=%"=="%URL%" echo  Input non-url, assume "twitch.tv/%URL%" & set "URL=http://twitch.tv/%URL%" 
-if /i "%URL:~-5%"=="+chat" ( set "URL=%URL:~-5%" & set "OPEN_CHAT=1" ) else set "OPEN_CHAT="
 if defined OPEN_CHAT start %URL%/chat
-set "STREAMLINK_LIST=%STREAMLINK% "%URL%" ^| find.exe /i "Available" 2^>nul" & set "LIST=" 
-if not defined STREAM for /f "usebackq tokens=2* delims=:" %%A in (`%STREAMLINK_LIST%`) do set "LIST=%%A" 
+set "--QUERYONLY--=--player QUERYONLY ^| find.exe /i "Available streams" 2^>nul" & set "LIST="
+if not defined STREAM for /f "usebackq tokens=2* delims=:" %%Q in (`%STREAMLINK% %URL% %--QUERYONLY--%`) do set "LIST=%%Q" 
 if defined LIST call set "LIST=%%LIST:(=,%%" &call set "LIST=%%LIST:)=%%" &call set "LIST=%%LIST: =%%" 
 if defined LIST echo  Available streams: %LIST% & call :choice "%URL%" "%LIST%" STREAM
 if defined LIST if not defined STREAM set "STREAMLINK=echo  [X] No choice selected & rem"
-%STREAMLINK% "%URL%" "%STREAM%,720p,480p,best"
+%STREAMLINK% --default-stream "%STREAM%,720p,480p,best" %URL%
 call set "TSTPATH=%%path:%~dp0=%%" & rem add Streamlink directory to current user environment without duplicating entries
 if "%TSTPATH%"=="%path%" ( reg add HKEY_CURRENT_USER\Environment /v PATH /t REG_SZ /f /d "%path%;%~dp0;" >nul 2>nul &setx OS %OS% )
 exit/b
@@ -47,10 +50,14 @@ if "%~2"=="input" set "h=%h% .ok {margin:0 0.1em;padding:0 0;width:18%%;display:
 set "h=%h% .edit {background-color:#392E5C;width:80%%;display:inline-block}</style></head>"
 set "h=%h% <body onload='%~2()'><script language='javascript' src='file://%~f0'></script>"
 endlocal & set "%~2=%h%" & exit /b                                                    
+:hidecmd %*:arguments
+setlocal & set "--arguments--=%*" & wscript //nologo /E:JScript "%~f0" RunCMD --arguments-- 0 & endlocal & exit/b
+:showcmd %*:arguments
+setlocal & set "--arguments--=%*" & wscript //nologo /E:JScript "%~f0" RunCMD --arguments-- 1 & endlocal & exit/b
 ::----------------------------------------------------------------------------------------------------------------------------------
-:"Streamlink.Init" Hybrid initialization with self-restart and HideCmd - script uses mshta windows instead
-@echo off & setlocal & chcp 65001 >NUL & set "PYTHONIOENCODING=cp65001" & pushd "%~dp0"
-@if not "%1"=="init" ( wscript //nologo /E:JScript "%~f0" HideCmd "init %*" & exit/b ) else goto="Streamlink.Batch"    
+:"Streamlink.Init" Hybrid initialization with HideCmd and arguments pass-trough after self-restart 
+@echo off & setlocal & pushd "%~dp0" & if "%1"=="--self--restart--" call :"Streamlink.Batch" %--init--% & endlocal & exit/b  
+set "--init--=%*" & call :hidecmd "%~f0" --self--restart-- & endlocal & exit/b  
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlink.JScript" */
 function input(){
@@ -67,6 +74,6 @@ function choice(){
     i.appendChild(document.createTextNode(opt[o])); buttons.appendChild(i); buttons.appendChild(document.createElement('br'));
   }
 }
-function HideCmd(self, arguments) { WScript.CreateObject('WScript.Shell').Run(self+' '+arguments, 0, 'False') }
-if (typeof window!='object' && WSH.Arguments.length>=1 && WSH.Arguments(0)=='HideCmd') HideCmd(WSH.ScriptFullName,WSH.Arguments(1));
+function RunCMD(arguments, show) { WScript.CreateObject('WScript.Shell').Run('%'+ arguments +'%', show, 'False'); }
+if (typeof window != 'object' && WScript.Arguments(0)=='RunCMD') RunCMD(WScript.Arguments(1), WScript.Arguments(2));
 // end of hybrid batch script
