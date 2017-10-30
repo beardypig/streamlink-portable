@@ -1,10 +1,11 @@
 goto="Streamlink.Init" /* 
 ::     url input + stream choice dialogs and hidecmd launcher
 :: Save as Streamlink.bat in Streamlink folder, can be called using [Win+R] Run-menu after first launch
-:: streamlink                            = with no parameters shows url input-dialog 
-:: streamlink dreamleague                = with just the url or twitch channel name shows stream choice-dialog  
-:: streamlink twitch.tv/dreamleague 720p = with both url and stream choice launches video player directly 
-:: Detects options like --help or --twitch-oauth-authenticate in url input-dialog and shows cmd window   
+:: streamlink                             = with no arguments shows url input-dialog 
+:: streamlink dreamleague                 = with just the url or twitch channel name shows stream choice-dialog  
+:: streamlink twitch.tv/dreamleague 720p  = with both url and stream choice launches video player directly 
+:: streamlink dreamleague+chat            = with +chat added to the url also opens twitch chat in browser tab  
+:: streamlink --twitch-oauth-authenticate = with any python options shows cmd window and keeps it open 
 :"Streamlink.Batch"
 rem set "TWITCH_OAUTH_TOKEN=--twitch-oauth-token YourTwitchOauthToken" 
 set "CONFIG=--config streamlinkrc %TWITCH_OAUTH_TOKEN%" 
@@ -18,15 +19,17 @@ if not defined URL echo  Input empty, insert url & call :input "STREAMLINK: Inse
 if not defined URL echo  [X] Input empty & timeout /t 4 & exit/b
 if /i "%URL:~0,2%"=="--" echo  Input contains options & call :showcmd cmd /k %STREAMLINK% %DEFAULT% %URL% & exit/b
 if "%URL: --=%"=="%URL%" ( echo  %URL% loading, wait.. ) else call :showcmd cmd /k %STREAMLINK% %DEFAULT% %URL% & exit/b 
+for /f "tokens=1,2,3* delims= " %%U in ("%URL%") do set "INPUT.URL=%%~U" & set "INPUT.STREAM=%%~V" & set "INPUT.NONE=%%~W"
+if not defined STREAM if not defined INPUT.NONE if defined INPUT.STREAM set "URL=%INPUT.URL%" & set "STREAM=%INPUT.STREAM%"
+if "%URL:/=%"=="%URL%" echo  Input non-url, assume twitch.tv/%URL% & set "URL=http://twitch.tv/%URL%" 
 if /i "%URL:~-5%"=="+chat" ( set "URL=%URL:~0,-5%" & set "OPEN_CHAT=1" ) else set "OPEN_CHAT="
-if "%URL:/=%"=="%URL%" echo  Input non-url, assume "twitch.tv/%URL%" & set "URL=http://twitch.tv/%URL%" 
 if defined OPEN_CHAT start %URL%/chat
 set "--QUERYONLY--=--player QUERYONLY ^| find.exe /i "Available streams" 2^>nul" & set "LIST="
-if not defined STREAM for /f "usebackq tokens=2* delims=:" %%Q in (`%STREAMLINK% %URL% %--QUERYONLY--%`) do set "LIST=%%Q" 
+if not defined STREAM for /f "usebackq tokens=2* delims=:" %%Q in (`%STREAMLINK% "%URL%" %--QUERYONLY--%`) do set "LIST=%%Q" 
 if defined LIST call set "LIST=%%LIST:(=,%%" &call set "LIST=%%LIST:)=%%" &call set "LIST=%%LIST: =%%" 
 if defined LIST echo  Available streams: %LIST% & call :choice "%URL%" "%LIST%" STREAM
 if defined LIST if not defined STREAM set "STREAMLINK=echo  [X] No choice selected & rem"
-%STREAMLINK% --default-stream "%STREAM%,720p,480p,best" %URL%
+%STREAMLINK% --default-stream "%STREAM%,720p,480p,best" "%URL%"
 call set "TSTPATH=%%path:%~dp0=%%" & rem add Streamlink directory to current user environment without duplicating entries
 if "%TSTPATH%"=="%path%" ( reg add HKEY_CURRENT_USER\Environment /v PATH /t REG_SZ /f /d "%path%;%~dp0;" >nul 2>nul &setx OS %OS% )
 exit/b
@@ -56,8 +59,8 @@ setlocal & set "--arguments--=%*" & wscript //nologo /E:JScript "%~f0" RunCMD --
 setlocal & set "--arguments--=%*" & wscript //nologo /E:JScript "%~f0" RunCMD --arguments-- 1 & endlocal & exit/b
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlink.Init" Hybrid initialization with HideCmd and arguments pass-trough after self-restart 
-@echo off & setlocal & pushd "%~dp0" & if "%1"=="--self--restart--" call :"Streamlink.Batch" %--init--% & endlocal & exit/b  
-set "--init--=%*" & call :hidecmd "%~f0" --self--restart-- & endlocal & exit/b  
+@echo off & pushd "%~dp0" & if "%1"=="--self--restart--" call :"Streamlink.Batch" "%--init--%" & exit/b  
+set "--init--=%*" & call :hidecmd "%~f0" --self--restart-- & exit/b  
 ::----------------------------------------------------------------------------------------------------------------------------------
 :"Streamlink.JScript" */
 function input(){
