@@ -12,7 +12,7 @@ before_deploy:
 deploy:
   - provider: releases
     api_key: "${RELEASES_API_KEY}"
-    file: streamlink-portable-*.zip
+    file: dist/stable/streamlink-portable-*.zip
     file_glob: true
     skip_cleanup: true
     on:
