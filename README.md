@@ -26,6 +26,10 @@ NB. `sed` must be `gnu-sed`
 
 ## Changelog
 
+### 2018-06-04
+
+* Add `isodate` module.
+
 ### 2018-05-09
 
 * Release stable `0.12.1`.
