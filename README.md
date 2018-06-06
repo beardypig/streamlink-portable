@@ -8,23 +8,28 @@ The latest versions of the portable zips can be downloaded here:
 - [streamlink-portable-latest-amd64.zip](https://dl.bintray.com/beardypig/streamlink-portable/streamlink-portable-latest-amd64.zip)
 
 A stable version is also available, based on the `0.12.1` tag of streamlink:
-- [streamlink-portable-0.12.1-py3.5.4-win32.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.12.1/streamlink-portable-0.12.1-py3.5.4-win32.zip)
-- [streamlink-portable-0.12.1-py3.5.4-amd64.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.12.1/streamlink-portable-0.12.1-py3.5.4-amd64.zip)
+- [streamlink-portable-0.12.1-py3.6.5-win32.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.12.1/streamlink-portable-0.12.1-py3.6.5-win32.zip)
+- [streamlink-portable-0.12.1-py3.6.5-amd64.zip](https://github.com/beardypig/streamlink-portable/releases/download/0.12.1/streamlink-portable-0.12.1-py3.6.5-amd64.zip)
 
 To install simply unzip the zip file.
 
-A `streamlink.bat` is included in the zip file so that you can easily execute `streamlink`. 
+A `streamlink.bat` is included in the zip file so that you can easily execute `streamlink`.
 
-The `streamlinkrc` file is read from the same directory as the `streamlink.bat` and is created when you first execute `streamlink.bat`, however it will not overwrite any existing config file so it an be editted and the changes not lost when updating.  
+The `streamlinkrc` file is read from the same directory as the `streamlink.bat` and is created when you first execute `streamlink.bat`, however it will not overwrite any existing config file so it an be editted and the changes not lost when updating.
 
 ## Building the zip files under Linux/macOS
 
 NB. `sed` must be `gnu-sed`
 
-- Clone this repo and execute the `scripts/makeportable.sh` script. 
+- Clone this repo and execute the `scripts/makeportable.sh` script.
 
 
 ## Changelog
+
+### 2018-06-06
+
+* Release stable `0.13.0`
+* Update Python to 3.6.5.
 
 ### 2018-06-04
 
@@ -52,8 +57,8 @@ NB. `sed` must be `gnu-sed`
 ### 2017-05-11
 
  * Release stable `0.6.0`.
- * Moved the nightly builds to Bintray. 
- 
+ * Moved the nightly builds to Bintray.
+
 ### 2017-03-29
 
  * Release stable `0.5.0`, lagged behind the official release.
@@ -72,7 +77,7 @@ NB. `sed` must be `gnu-sed`
 
  * Fixed bug with ffmpeg/rtmpdump paths being set on the command line.
  * The batch script doesn't change directory any more
- * Added iso3166 and iso-639 packages 
+ * Added iso3166 and iso-639 packages
 
 ### 2017-01-11
 

@@ -7,7 +7,7 @@ set -e # quit on error
 
 branch=${1:-master}
 STREAMLINK_PYTHON_ARCH=${2:-win32}
-STREAMLINK_PYTHON_VERSION=3.5.4
+STREAMLINK_PYTHON_VERSION=3.6.5
 PYTHON_PLATFORM=${STREAMLINK_PYTHON_ARCH}
 
 if [[ "${STREAMLINK_PYTHON_ARCH}" == "amd64" ]]; then
@@ -37,7 +37,7 @@ pushd "${streamlink_clone_dir}" > /dev/null
 commit=$(git rev-parse --short HEAD)
 
 echo "Downloading Python dependencies..."
-pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "35" --abi "cp35m" -d "${temp_dir}" "pycryptodome==3.4.3" > /dev/null
+pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "36" --abi "cp36m" -d "${temp_dir}" "pycryptodome==3.4.3" > /dev/null
 pip install --upgrade -t "${packages_dir}" "iso-639" "iso3166" "setuptools" "requests>=1.0,>=2.18.0,<3.0" "websocket-client" "PySocks!=1.5.7,>=1.5.6" "isodate" > /dev/null
 
 # Work out the streamlink version
