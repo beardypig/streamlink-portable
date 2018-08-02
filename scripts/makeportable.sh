@@ -34,6 +34,7 @@ rm -rf "${streamlink_clone_dir}"
 git clone -q --depth=50 --branch="${branch}" https://github.com/streamlink/streamlink.git ${streamlink_clone_dir} > /dev/null
 
 pushd "${streamlink_clone_dir}" > /dev/null
+git fetch --tags > /dev/null  # update the tags
 commit=$(git rev-parse --short HEAD)
 
 echo "Downloading Python dependencies..."
@@ -41,13 +42,10 @@ pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-vers
 pip install --upgrade -t "${packages_dir}" "iso-639" "iso3166" "setuptools" "requests>=1.0,>=2.18.0,<3.0" "websocket-client" "PySocks!=1.5.7,>=1.5.6" "isodate" > /dev/null
 
 # Work out the streamlink version
-# For travis nightly builds generate a version number with commit hash
 STREAMLINK_VERSION=$(python setup.py --version)
-sdate=$(date "+%Y%m%d" -d @$(git show -s --format="%ct" ${commit}))
 if [ "$branch" = "master" ]; then
     echo "Building nightly/dev version..."
     dist_dir="${root_dir}/dist/nightly"
-    STREAMLINK_VERSION="${STREAMLINK_VERSION}-${sdate}-${commit}"
 else
     echo "Building stable version ${branch}..."
     dist_dir="${root_dir}/dist/stable"
@@ -67,7 +65,7 @@ unzip -o "${root_dir}/resources/msvcrt_${PYTHON_PLATFORM}.zip" -d "${python_dir}
 unzip -o "${temp_dir}/*.whl" -d "${packages_dir}" > /dev/null
 #unzip -o "${temp_dir}/requests*.whl" -d "${packages_dir}" > /dev/null
 
-cp -r "${streamlink_clone_dir}/src/"* "${bundle_dir}/packages"
+tar xf "${temp_dir}/streamlink-${STREAMLINK_VERSION}.tar.gz" --strip-components 2 -C "${bundle_dir}/packages/" "streamlink-${STREAMLINK_VERSION}/src/streamlink" "streamlink-${STREAMLINK_VERSION}/src/streamlink_cli"
 cp "${root_dir}/resources/streamlink-script.py" "${bundle_dir}/streamlink-script.py"
 cp "${root_dir}/resources/streamlink.bat" "${bundle_dir}/streamlink.bat"
 cp "${root_dir}/NOTICE" "${bundle_dir}/NOTICE.txt"
