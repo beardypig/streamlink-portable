@@ -6,6 +6,7 @@
 set -e # quit on error
 
 branch=${1:-master}
+branch=${branch%+*}
 STREAMLINK_PYTHON_ARCH=${2:-win32}
 STREAMLINK_PYTHON_VERSION=3.6.5
 PYTHON_PLATFORM=${STREAMLINK_PYTHON_ARCH}
