@@ -32,7 +32,7 @@ wget -q "${python_url}" -c -O "build/temp/python-${STREAMLINK_PYTHON_VERSION}-em
 # remove any old streamlink clone
 echo "Cloning streamlink from ${branch}..."
 rm -rf "${streamlink_clone_dir}"
-git clone -q --depth=50 --branch="${branch}" https://github.com/streamlink/streamlink.git ${streamlink_clone_dir} > /dev/null
+git clone -q --depth=300 --branch="${branch}" https://github.com/streamlink/streamlink.git ${streamlink_clone_dir} > /dev/null
 
 pushd "${streamlink_clone_dir}" > /dev/null
 git fetch --tags > /dev/null  # update the tags
