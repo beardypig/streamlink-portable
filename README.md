@@ -7,9 +7,9 @@ The latest versions of the portable zips can be downloaded here:
 - [streamlink-portable-latest-win32.zip](https://dl.bintray.com/beardypig/streamlink-portable/streamlink-portable-latest-win32.zip)
 - [streamlink-portable-latest-amd64.zip](https://dl.bintray.com/beardypig/streamlink-portable/streamlink-portable-latest-amd64.zip)
 
-A stable version is also available, based on the `1.1.1` tag of streamlink:
-- [streamlink-portable-1.1.1-py3.6.5-win32.zip](https://github.com/beardypig/streamlink-portable/releases/download/1.1.1/streamlink-portable-1.1.1-py3.6.5-win32.zip)
-- [streamlink-portable-1.1.1-py3.6.5-amd64.zip](https://github.com/beardypig/streamlink-portable/releases/download/1.1.1/streamlink-portable-1.1.1-py3.6.5-amd64.zip)
+A stable version is also available, based on the `1.3.0` tag of streamlink:
+- [streamlink-portable-1.3.0-py3.6.5-win32.zip](https://github.com/beardypig/streamlink-portable/releases/download/1.3.0/streamlink-portable-1.3.0-py3.6.5-win32.zip)
+- [streamlink-portable-1.3.0-py3.6.5-amd64.zip](https://github.com/beardypig/streamlink-portable/releases/download/1.3.0/streamlink-portable-1.3.0-py3.6.5-amd64.zip)
 
 To install simply unzip the zip file.
 
@@ -25,6 +25,10 @@ NB. `sed` must be `gnu-sed`
 
 
 ## Changelog
+
+### 2019-11-22
+
+* Release stable version `1.3.0`.
 
 ### 2019-04-15
 
