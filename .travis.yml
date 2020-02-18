@@ -19,6 +19,7 @@ deploy:
     api_key: "${RELEASES_API_KEY}"
     file: dist/stable/streamlink-portable-*.zip
     file_glob: true
+    overwrite: true
     skip_cleanup: true
     on:
       branch: master
