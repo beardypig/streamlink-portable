@@ -12,29 +12,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v2
-      # check out streamlink master
-      - uses: actions/checkout@v2
-        id: streamlink_checkout
+      - name: Checkout streamlink-portable scripts
+        uses: actions/checkout@v2
+      # check out a specific streamlink tag
+      - name: Check out streamlink ${{ steps.streamlink_tag.outputs.VERSION }}
+        uses: actions/checkout@v2
         with:
-          repository: 'streamlink/streamlink'
-          path: 'streamlink'
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          repository: streamlink/streamlink
+          path: streamlink
+          fetch-depth: 300
+
+      - name: Grab the latest tags for streamlink
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        working-directory: streamlink
+
       - uses: actions/setup-python@v1
+        name: Setup Python
         with:
           python-version: 3.6
-      - run: pip install -U wheel pip
+
+      - name: Install dependencies
+        run: pip install -U wheel pip
+
       - name: Build win32 package
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.6.5
           STREAMLINK_PYTHON_ARCH: win32
+
       - name: Build amd64 package
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.6.5
           STREAMLINK_PYTHON_ARCH: amd64
-      - uses: "marvinpinto/action-automatic-releases@latest"
+
+      - name: Create/update latest release
+        uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"

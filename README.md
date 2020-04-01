@@ -3,11 +3,9 @@ A script to build a portable version of Streamlink for Windows.
 
 The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and come bundled with Python 3.5.4. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version).
 
-**Latest builds are currently unavailable**
+The portable zip of the most recent stable streamlink version can be found in the [releases](https://github.com/beardypig/streamlink-portable/releases/) section of this repo. 
 
-A stable version is also available, based on the `1.3.1` tag of streamlink:
-- [streamlink-portable-1.3.1-py3.6.5-win32.zip](https://github.com/beardypig/streamlink-portable/releases/download/1.3.1/streamlink-portable-1.3.1-py3.6.5-win32.zip)
-- [streamlink-portable-1.3.1-py3.6.5-amd64.zip](https://github.com/beardypig/streamlink-portable/releases/download/1.3.1/streamlink-portable-1.3.1-py3.6.5-amd64.zip)
+The nightly builds are available the [latest pre-release](https://github.com/beardypig/streamlink-portable/releases/tag/latest).
 
 To install simply unzip the zip file.
 

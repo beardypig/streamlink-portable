@@ -1,0 +1,134 @@
+name: Build new release
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+env:
+  ROOT_DIR: ${{ github.workspace }}
+
+jobs:
+  streamlink_tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out streamlink master
+        uses: actions/checkout@v2
+        with:
+          repository: streamlink/streamlink
+          ref: master
+          fetch-depth: 300
+
+      - name: Write latest streamlink tag to file
+        run: |
+          mkdir -p ./artifact
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git describe --abbrev=0 --tags > ./artifact/streamlink_tag.txt
+
+      - name: Upload streamlink tag artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: streamlink-tag
+          path: ./artifact
+
+  streamlink_portable_tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out streamlink-portable master
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - name: Write latest streamlink-portable tag to file
+        run: |
+          mkdir -p ./artifact
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git describe --abbrev=0 --tags > ./artifact/streamlink_portable_tag.txt
+
+      - name: Upload streamlink-portable tag artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: streamlink-portable-tag
+          path: ./artifact
+
+  stable:
+    runs-on: ubuntu-latest
+    needs: [streamlink_tag, streamlink_portable_tag]
+    steps:
+      - name: Download streamlink-tag artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: streamlink-tag
+
+      - name: Download streamlink-portable-tag artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: streamlink-portable-tag
+
+      - name: Export streamlink tag
+        id: streamlink_tag
+        run: echo ::set-output name=VERSION::$(cat streamlink-tag/streamlink_tag.txt)
+        shell: bash
+
+      - name: Compare tags
+        id: new_version
+        run: |
+          [[ "$(cat streamlink-tag/streamlink_tag.txt)" == "$(cat streamlink-portable-tag/streamlink_portable_tag.txt)" ]] && echo ::set-output name=result::0 || echo ::set-output name=result::1
+        shell: bash
+
+      - name: Checkout streamlink-portable scripts
+        if: steps.new_version.outputs.result == '1'
+        uses: actions/checkout@v2
+      # check out a specific streamlink tag
+      - name: Check out streamlink ${{ steps.streamlink_tag.outputs.VERSION }}
+        if: steps.new_version.outputs.result == '1'
+        uses: actions/checkout@v2
+        with:
+          repository: streamlink/streamlink
+          path: streamlink
+          ref: ${{ steps.streamlink_tag.outputs.VERSION }}
+
+      - uses: actions/setup-python@v1
+        if: steps.new_version.outputs.result == '1'
+        name: Setup Python
+        with:
+          python-version: 3.6
+
+      - name: Install dependencies
+        if: steps.new_version.outputs.result == '1'
+        run: pip install -U wheel pip
+
+      - name: Build win32 package
+        if: steps.new_version.outputs.result == '1'
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.5
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package
+        if: steps.new_version.outputs.result == '1'
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.5
+          STREAMLINK_PYTHON_ARCH: amd64
+
+      - name: Create release ${{ steps.streamlink_tag.outputs.VERSION }}
+        if: steps.new_version.outputs.result == '1'
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.streamlink_tag.outputs.VERSION }}
+          release_name: Streamlink Portable ${{ steps.streamlink_tag.outputs.VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload release artifacts
+        if: steps.new_version.outputs.result == '1'
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/streamlink-portable*.zip
+          tag: ${{ steps.streamlink_tag.outputs.VERSION }}
+          overwrite: true
+          file_glob: true
