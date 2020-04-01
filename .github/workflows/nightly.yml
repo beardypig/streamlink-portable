@@ -1,0 +1,44 @@
+name: Build nightly
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  ROOT_DIR: ${{ github.workspace }}
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v2
+      # check out streamlink master
+      - uses: actions/checkout@v2
+        id: streamlink_checkout
+        with:
+          repository: 'streamlink/streamlink'
+          path: 'streamlink'
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+      - run: pip install -U wheel pip
+      - name: Build win32 package
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.5
+          STREAMLINK_PYTHON_ARCH: win32
+      - name: Build amd64 package
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.5
+          STREAMLINK_PYTHON_ARCH: amd64
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Nightly Build"
+          files: |
+            dist/streamlink-portable*.zip
