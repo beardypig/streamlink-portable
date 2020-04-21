@@ -3,9 +3,9 @@ A script to build a portable version of Streamlink for Windows.
 
 The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and come bundled with Python 3.5.4. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version).
 
-The portable zip of the most recent stable streamlink version can be found in the [releases](https://github.com/beardypig/streamlink-portable/releases/) section of this repo. 
+The portable zip of the most recent stable streamlink version can be found in the [latest release](https://github.com/beardypig/streamlink-portable/releases/latest). 
 
-The nightly builds are available the [latest pre-release](https://github.com/beardypig/streamlink-portable/releases/tag/latest).
+The latest [Nightly build](https://github.com/beardypig/streamlink-portable/releases/tag/latest) is available too.
 
 To install simply unzip the zip file.
 
@@ -21,6 +21,10 @@ NB. `sed` must be `gnu-sed`
 
 
 ## Changelog
+
+### 2020-04-21
+
+* Updated `makeportable.sh` script to download the ffmpeg/rtmpdump assets from the new streamlink-asset repo.
 
 ### 2020-02-18
 
