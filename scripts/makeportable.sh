@@ -69,7 +69,7 @@ cp "${ROOT_DIR}/resources/streamlink.bat" "${bundle_dir}/streamlink.bat"
 cp "${ROOT_DIR}/NOTICE" "${bundle_dir}/NOTICE.txt"
 
 cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/streamlinkrc" "${bundle_dir}/streamlinkrc.template"
-cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/LICENSE.txt" "${bundle_dir}/LICENSE.txt"
+cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/THIRD-PARTY.txt" "${bundle_dir}/THIRD-PARTY.txt"
 
 # download binary assets like ffmpeg and rtmpdump from the streamlink assets repo
 # parse the data.json manifest, validate archives and copy specific files to their destination
