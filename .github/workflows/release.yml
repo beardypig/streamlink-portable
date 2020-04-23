@@ -23,60 +23,68 @@ jobs:
             console.log(result);
             return result;
 
+      - name: Set version variables
+        id: versions
+        run: |
+          echo ::set-output name=streamlink_tag::$(echo $json_var | jq -r '.streamlink')
+          echo ::set-output name=streamlink_portable_tag::$(echo $json_var | jq -r '.portable')
+        env:
+          json_var: ${{ steps.releases.outputs.result }}
+
       - name: Checkout streamlink-portable scripts
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         uses: actions/checkout@v2
 
       # check out a specific streamlink tag
-      - name: Check out streamlink ${{ steps.releases.outputs.result.streamlink }}
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+      - name: Check out streamlink ${{ steps.versions.outputs.streamlink_tag }}
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         uses: actions/checkout@v2
         with:
           repository: streamlink/streamlink
           path: streamlink
-          ref: ${{ steps.releases.outputs.result.streamlink }}
+          ref: ${{ steps.versions.outputs.streamlink_tag }}
 
       - uses: actions/setup-python@v1
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         name: Setup Python
         with:
           python-version: 3.6
 
       - name: Install dependencies
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: pip install -U wheel pip
 
       - name: Build win32 package
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.6.5
           STREAMLINK_PYTHON_ARCH: win32
 
       - name: Build amd64 package
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.6.5
           STREAMLINK_PYTHON_ARCH: amd64
 
-      - name: Create release ${{ steps.releases.outputs.result.streamlink }}
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+      - name: Create release ${{ steps.versions.outputs.streamlink_tag }}
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.releases.outputs.result.streamlink }}
-          release_name: Streamlink Portable ${{ steps.releases.outputs.result.streamlink }}
+          tag_name: ${{ steps.versions.outputs.streamlink_tag }}
+          release_name: Streamlink Portable ${{ steps.versions.outputs.streamlink_tag }}
           draft: false
           prerelease: false
 
       - name: Upload release artifacts
-        if: steps.releases.outputs.result.streamlink != steps.releases.outputs.result.portable
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: dist/streamlink-portable*.zip
-          tag: ${{ steps.releases.outputs.result.streamlink }}
+          tag: ${{ steps.versions.outputs.streamlink_tag }}
           overwrite: true
           file_glob: true
