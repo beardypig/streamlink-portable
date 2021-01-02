@@ -22,6 +22,10 @@ NB. `sed` must be `gnu-sed`
 
 ## Changelog
 
+### 2021-01-02 
+
+* Remove deprecated `--no-version-check` from the launcher script.
+
 ### 2020-04-21
 
 * Updated `makeportable.sh` script to download the ffmpeg/rtmpdump assets from the new streamlink-asset repo.
