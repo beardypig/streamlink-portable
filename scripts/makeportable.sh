@@ -24,7 +24,7 @@ cache_dir="${ROOT_DIR}/build/cache"
 mkdir -p "${bundle_dir}" "${dist_dir}" "${cache_dir}"
 
 STREAMLINK_PYTHON_ARCH=${STREAMLINK_PYTHON_ARCH:-win32}
-STREAMLINK_PYTHON_VERSION=${STREAMLINK_PYTHON_VERSION:-3.6.5}
+STREAMLINK_PYTHON_VERSION=${STREAMLINK_PYTHON_VERSION:-3.7.9}
 STREAMLINK_CHECKOUT_DIR="${ROOT_DIR}/streamlink"
 STREAMLINK_ASSETS_REPO="${STREAMLINK_ASSETS_REPO:-streamlink/streamlink-assets}"
 STREAMLINK_ASSETS_RELEASE="${STREAMLINK_ASSETS_RELEASE:-latest}"
@@ -42,8 +42,8 @@ wget -q "${python_url}" -c -O "${temp_dir}/python-${STREAMLINK_PYTHON_VERSION}-e
 pushd "${STREAMLINK_CHECKOUT_DIR}" > /dev/null
 
 log "Downloading Python dependencies..."
-pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "36" --abi "cp36m" -d "${temp_dir}" "pycryptodome==3.4.3" > /dev/null
-pip install --upgrade -t "${packages_dir}" "iso-639" "iso3166" "setuptools" "requests>=1.0,>=2.18.0,<3.0" "websocket-client" "PySocks!=1.5.7,>=1.5.6" "isodate" > /dev/null
+pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "37" --abi "cp37m" -d "${temp_dir}" "pycryptodome>=3.4.3,<4" > /dev/null
+pip install --upgrade -t "${packages_dir}" "iso-639" "iso3166" "setuptools" "requests>=2.21.0,<3.0" "websocket-client" "PySocks!=1.5.7,>=1.5.6" "isodate" > /dev/null
 
 # create an sdist package to be "installed"
 log "Building streamlink sdist"

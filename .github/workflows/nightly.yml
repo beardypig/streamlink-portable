@@ -40,13 +40,13 @@ jobs:
       - name: Build win32 package
         run: bash ./scripts/makeportable.sh
         env:
-          STREAMLINK_PYTHON_VERSION: 3.6.5
+          STREAMLINK_PYTHON_VERSION: 3.7.9
           STREAMLINK_PYTHON_ARCH: win32
 
       - name: Build amd64 package
         run: bash ./scripts/makeportable.sh
         env:
-          STREAMLINK_PYTHON_VERSION: 3.6.5
+          STREAMLINK_PYTHON_VERSION: 3.7.9
           STREAMLINK_PYTHON_ARCH: amd64
 
       - name: Create/update latest release

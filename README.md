@@ -1,7 +1,7 @@
 # Streamlink Portable
 A script to build a portable version of Streamlink for Windows.
 
-The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and come bundled with Python 3.5.4. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version).
+The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and comes bundled with Python 3.7.9. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version).
 
 The portable zip of the most recent stable streamlink version can be found in the [latest release](https://github.com/beardypig/streamlink-portable/releases/latest). 
 
@@ -21,6 +21,11 @@ NB. `sed` must be `gnu-sed`
 
 
 ## Changelog
+
+### 2021-01-03
+
+* Update to Python 3.7.9.
+* Update dependencies to match latest version of Streamlink.
 
 ### 2021-01-02 
 
