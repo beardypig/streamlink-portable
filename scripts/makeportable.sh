@@ -47,10 +47,10 @@ pip install --upgrade -t "${packages_dir}" "iso-639" "iso3166" "setuptools" "req
 
 # create an sdist package to be "installed"
 log "Building streamlink sdist"
-env NO_DEPS=1 python "setup.py" sdist -d "${temp_dir}" > /dev/null
+env NO_DEPS=1 python3 "setup.py" sdist -d "${temp_dir}" > /dev/null
 
 # Work out the streamlink version
-STREAMLINK_VERSION=$(python setup.py --version)
+STREAMLINK_VERSION=$(python3 setup.py --version)
 
 popd > /dev/null
 
@@ -68,7 +68,7 @@ cp "${ROOT_DIR}/resources/streamlink-script.py" "${bundle_dir}/streamlink-script
 cp "${ROOT_DIR}/resources/streamlink.bat" "${bundle_dir}/streamlink.bat"
 cp "${ROOT_DIR}/NOTICE" "${bundle_dir}/NOTICE.txt"
 
-cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/streamlinkrc" "${bundle_dir}/streamlinkrc.template"
+cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/config" "${bundle_dir}/config.template"
 cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/THIRD-PARTY.txt" "${bundle_dir}/THIRD-PARTY.txt"
 
 # download binary assets like ffmpeg and rtmpdump from the streamlink assets repo
@@ -117,8 +117,8 @@ for ((i=$(jq length <<< "${assets_data}") - 1; i >= 0; --i)); do
 done
 
 # remove the rtmpdump and ffmpeg template lines
-sed -i "/^rtmpdump=.*/d" "${bundle_dir}/streamlinkrc.template"
-sed -i "/^ffmpeg-ffmpeg=.*/d" "${bundle_dir}/streamlinkrc.template"
+sed -i "/^rtmpdump=.*/d" "${bundle_dir}/config.template"
+sed -i "/^ffmpeg-ffmpeg=.*/d" "${bundle_dir}/config.template"
 
 pushd "${temp_dir}" > /dev/null
 mkdir -p "${dist_dir}"
