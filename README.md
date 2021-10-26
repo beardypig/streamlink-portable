@@ -51,6 +51,8 @@ git clone https://github.com/streamlink/streamlink
 * Fix streamlinkrc -> config rename.
 * Call `python3` command directly.
 * Add Windows build instructions.
+* Update to Python 3.9.7.
+* Including extra dependencies. 
 
 ### 2021-01-03
 

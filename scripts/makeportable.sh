@@ -42,7 +42,7 @@ pushd "${STREAMLINK_CHECKOUT_DIR}" > /dev/null
 
 log "Downloading Python dependencies..."
 pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "37" --abi "cp37m" -d "${temp_dir}" "pycryptodome>=3.4.3,<4" > /dev/null
-pip install --upgrade -t "${packages_dir}" "iso-639" "iso3166" "setuptools" "requests>=2.21.0,<3.0" "websocket-client" "PySocks!=1.5.7,>=1.5.6" "isodate" > /dev/null
+pip install --upgrade -t "${packages_dir}" "iso-639" "iso3166" "setuptools" "requests>=2.26.0,<3.0" "websocket-client>=0.58.0" "lxml>=4.6.3" "PySocks!=1.5.7,>=1.5.6" "isodate" > /dev/null
 
 # create an sdist package to be "installed"
 log "Building streamlink sdist"
