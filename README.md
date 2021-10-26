@@ -45,11 +45,12 @@ git clone https://github.com/streamlink/streamlink
 
 ## Changelog
 
-### 2021-07-26
+### 2021-10-26
 
-* Fix streamlinkrc -> config rename
-* Call `python3` command directly
-* Add Windows build instructions
+* Updated the asset management method to be inline with streamlink.
+* Fix streamlinkrc -> config rename.
+* Call `python3` command directly.
+* Add Windows build instructions.
 
 ### 2021-01-03
 
