@@ -24,10 +24,9 @@ cache_dir="${ROOT_DIR}/build/cache"
 mkdir -p "${bundle_dir}" "${dist_dir}" "${cache_dir}"
 
 STREAMLINK_PYTHON_ARCH=${STREAMLINK_PYTHON_ARCH:-win32}
-STREAMLINK_PYTHON_VERSION=${STREAMLINK_PYTHON_VERSION:-3.7.9}
+STREAMLINK_PYTHON_VERSION=${STREAMLINK_PYTHON_VERSION:-3.9.7}
 STREAMLINK_CHECKOUT_DIR="${ROOT_DIR}/streamlink"
-STREAMLINK_ASSETS_REPO="${STREAMLINK_ASSETS_REPO:-streamlink/streamlink-assets}"
-STREAMLINK_ASSETS_RELEASE="${STREAMLINK_ASSETS_RELEASE:-latest}"
+STREAMLINK_ASSETS_FILE="${STREAMLINK_CHECKOUT_DIR}/script/makeinstaller-assets.json"
 PYTHON_PLATFORM=${STREAMLINK_PYTHON_ARCH}
 
 if [[ "${STREAMLINK_PYTHON_ARCH}" == "amd64" ]]; then
@@ -71,50 +70,43 @@ cp "${ROOT_DIR}/NOTICE" "${bundle_dir}/NOTICE.txt"
 cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/config" "${bundle_dir}/config.template"
 cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/THIRD-PARTY.txt" "${bundle_dir}/THIRD-PARTY.txt"
 
-# download binary assets like ffmpeg and rtmpdump from the streamlink assets repo
-# parse the data.json manifest, validate archives and copy specific files to their destination
-log "Fetching assets data from \"${STREAMLINK_ASSETS_REPO}\" (${STREAMLINK_ASSETS_RELEASE})"
-assets_release_data=$(curl -s --fail \
-    -H 'Accept: application/vnd.github.v3+json' \
-    -H "User-Agent: ${GITHUB_REPOSITORY:-"streamlink/streamlink"}" \
-    "https://api.github.com/repos/${STREAMLINK_ASSETS_REPO}/releases/${STREAMLINK_ASSETS_RELEASE}" \
-    || err "Could not fetch release data"
-)
-assets_release_tag=$(echo "${assets_release_data}" | jq -r ".tag_name")
-assets_data=$(curl -s --fail \
-    -H "User-Agent: ${GITHUB_REPOSITORY:-"streamlink/streamlink"}" \
-    "https://raw.githubusercontent.com/${STREAMLINK_ASSETS_REPO}/${assets_release_tag}/data.json" \
-    || err "Could not fetch manifest data"
-)
+ASSETS_DATA=$(cat "${STREAMLINK_ASSETS_FILE}")
 
-log "Retrieving assets"
-while read -r filename size url; do
-    if ! [[ -f "${cache_dir}/${filename}" ]]; then
-        log "Downloading asset: ${filename} (${size} Bytes)"
-        curl -s -L --output "${cache_dir}/${filename}" "${url}"
-    fi
-    checksum=$(jq -r "[.[] | select(.filename == \"${filename}\")] | first | .checksum" <<< "${assets_data}")
-    echo "${checksum} ${cache_dir}/${filename}" | sha256sum --check -
-done < <(jq -r '.assets[] | "\(.name) \(.size) \(.browser_download_url)"' <<< "${assets_release_data}")
+assets_prepare() {
+    log "Preparing assets"
+    while read -r filename sha256 url; do
+        if ! [[ -f "${cache_dir}/${filename}" ]]; then
+            log "Downloading asset: ${filename}"
+            curl -L -o "${cache_dir}/${filename}" "${url}"
+        fi
+        echo "${sha256} ${cache_dir}/${filename}" | sha256sum --check -
+    done < <(jq -r '.[] | "\(.filename) \(.sha256) \(.url)"' <<< "${ASSETS_DATA}")
+}
 
-log "Assembling files directory"
-TEMP=$(mktemp -d) && trap "rm -rf ${TEMP}" EXIT || exit 255
-for ((i=$(jq length <<< "${assets_data}") - 1; i >= 0; --i)); do
-    read -r filename sourcedir targetdir \
-        < <(jq -r ".[$i] | \"\(.filename) \(.sourcedir) \(.targetdir)\"" <<< "${assets_data}")
-    sourcedir="${TEMP}/${sourcedir}"
-    case "${filename}" in
-        *.zip)
-            unzip "${cache_dir}/${filename}" -d "${TEMP}"
-            ;;
-        *)
-            sourcedir="${cache_dir}"
-            ;;
-    esac
-    while read -r from to; do
-        install -v -D -T "${sourcedir}/${from}" "${bundle_dir}/${targetdir}/${to}"
-    done < <(jq -r ".[$i].files[] | \"\(.from) \(.to)\"" <<< "${assets_data}")
-done
+assets_assemble() {
+    log "Assembling files directory"
+    local tmp=$(mktemp -d) && trap "rm -rf '${tmp}'" RETURN || exit 255
+    for ((i=$(jq length <<< "${ASSETS_DATA}") - 1; i >= 0; --i)); do
+        read -r type filename sourcedir targetdir \
+            < <(jq -r ".[$i] | \"\(.type) \(.filename) \(.sourcedir) \(.targetdir)\"" <<< "${ASSETS_DATA}")
+        case "${type}" in
+            zip)
+                mkdir -p "${tmp}/${i}"
+                unzip "${cache_dir}/${filename}" -d "${tmp}/${i}"
+                sourcedir="${tmp}/${i}/${sourcedir}"
+                ;;
+            *)
+                sourcedir="${cache_dir}"
+                ;;
+        esac
+        while read -r from to; do
+            install -v -D -T "${sourcedir}/${from}" "${bundle_dir}/${targetdir}/${to}"
+        done < <(jq -r ".[$i].files[] | \"\(.from) \(.to)\"" <<< "${ASSETS_DATA}")
+    done
+}
+
+assets_prepare
+assets_assemble
 
 # remove the rtmpdump and ffmpeg template lines
 sed -i "/^rtmpdump=.*/d" "${bundle_dir}/config.template"
