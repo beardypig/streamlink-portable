@@ -68,7 +68,7 @@ cp "${ROOT_DIR}/resources/streamlink-script.py" "${bundle_dir}/streamlink-script
 cp "${ROOT_DIR}/resources/streamlink.bat" "${bundle_dir}/streamlink.bat"
 cp "${ROOT_DIR}/NOTICE" "${bundle_dir}/NOTICE.txt"
 
-cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/streamlinkrc" "${bundle_dir}/streamlinkrc.template"
+cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/config" "${bundle_dir}/streamlinkrc.template"
 cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/THIRD-PARTY.txt" "${bundle_dir}/THIRD-PARTY.txt"
 
 # download binary assets like ffmpeg and rtmpdump from the streamlink assets repo
