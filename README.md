@@ -19,8 +19,40 @@ NB. `sed` must be `gnu-sed`
 
 - Clone this repo and execute the `scripts/makeportable.sh` script.
 
+## Building the zip files under Windows
+
+1. Install [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10). These instructions were done using WSL2 Ubuntu 20.04 LTS with `wsl --install -d Ubuntu-20.04`
+
+2. Update and fetch pre-requisite dependencies:
+```
+sudo apt update
+sudo apt upgrade
+sudo apt install python3-pip zip unzip jq
+```
+
+3. Setup a working dir on a Windows mount, such as `mkdir /mnt/d/scratch` and `cd` into it.
+
+4. Clone this repo and [streamlink/streamlink](https://github.com/streamlink/streamlink) into a subdir called `streamlink` (assigned by default from repo name):
+```
+git clone https://github.com/beardypig/streamlink-portable
+cd streamlink-portable
+git clone https://github.com/streamlink/streamlink
+```
+
+5. Execute script directly as bash: `sudo bash ./scripts/makeportable.sh`
+
+6. Find result inside `dist` subfolder.
 
 ## Changelog
+
+### 2021-10-26
+
+* Updated the asset management method to be inline with streamlink.
+* Fix streamlinkrc -> config rename.
+* Call `python3` command directly.
+* Add Windows build instructions.
+* Update to Python 3.9.7.
+* Including extra dependencies. 
 
 ### 2021-01-03
 

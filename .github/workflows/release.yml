@@ -56,14 +56,14 @@ jobs:
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: pip install -U wheel pip
 
-      - name: Build win32 package
+      - name: Build win32 package (Python 3.7)
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.7.9
           STREAMLINK_PYTHON_ARCH: win32
 
-      - name: Build amd64 package
+      - name: Build amd64 package (Python 3.7)
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: bash ./scripts/makeportable.sh
         env:
