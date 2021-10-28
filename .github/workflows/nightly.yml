@@ -40,16 +40,52 @@ jobs:
       - name: Install dependencies
         run: pip install -U wheel pip
 
-      - name: Build win32 package
+      - name: Build win32 package (Python 3.6)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.8
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package (Python 3.6)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.8
+          STREAMLINK_PYTHON_ARCH: amd64
+
+      - name: Build win32 package (Python 3.7)
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.7.9
           STREAMLINK_PYTHON_ARCH: win32
 
-      - name: Build amd64 package
+      - name: Build amd64 package (Python 3.7)
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.7.9
+          STREAMLINK_PYTHON_ARCH: amd64
+
+      - name: Build win32 package (Python 3.8)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.8.10
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package (Python 3.8)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.8.10
+          STREAMLINK_PYTHON_ARCH: amd64
+
+      - name: Build win32 package (Python 3.9)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.9.7
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package (Python 3.9)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.9.7
           STREAMLINK_PYTHON_ARCH: amd64
 
       - name: Create/update latest release

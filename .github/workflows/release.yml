@@ -56,6 +56,20 @@ jobs:
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: pip install -U wheel pip
 
+      - name: Build win32 package (Python 3.6)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.8
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package (Python 3.6)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.6.8
+          STREAMLINK_PYTHON_ARCH: amd64
+
       - name: Build win32 package (Python 3.7)
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: bash ./scripts/makeportable.sh
@@ -68,6 +82,34 @@ jobs:
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.7.9
+          STREAMLINK_PYTHON_ARCH: amd64
+
+      - name: Build win32 package (Python 3.8)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.8.10
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package (Python 3.8)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.8.10
+          STREAMLINK_PYTHON_ARCH: amd64
+
+      - name: Build win32 package (Python 3.9)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.9.7
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package (Python 3.9)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.9.7
           STREAMLINK_PYTHON_ARCH: amd64
 
       - name: Create release ${{ steps.versions.outputs.streamlink_tag }}
