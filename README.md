@@ -1,7 +1,7 @@
 # Streamlink Portable
 A script to build a portable version of Streamlink for Windows.
 
-The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and comes bundled with Python 3.7.9. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version).
+The portable zip files are build from the master branch of [streamlink/streamlink](https://github.com/streamlink/streamlink) and comes bundled with Python 3. There is a 32 bit and a 64 bit version available for 32 bit Windows and 64 bit Windows (if in doubt use the 32 bit version). Multiple bundles with different versions of Python 3 are available, the latest version of Python bundled is currently 3.9. Older versions of Python 3 are provided to maintain compatibility with older versions of Windows. Going forward the bundled versions of Python will be all versions supported by Streamlink. 
 
 The portable zip of the most recent stable streamlink version can be found in the [latest release](https://github.com/beardypig/streamlink-portable/releases/latest). 
 
@@ -11,12 +11,13 @@ To install simply unzip the zip file.
 
 A `streamlink.bat` is included in the zip file so that you can easily execute `streamlink`.
 
-The `streamlinkrc` file is read from the same directory as the `streamlink.bat` and is created when you first execute `streamlink.bat`, however it will not overwrite any existing config file so it an be editted and the changes not lost when updating.
+The `config` file is read from the same directory as the `streamlink.bat` and is created when you first execute `streamlink.bat`, however it will not overwrite any existing config file so it an be editted and the changes not lost when updating.
 
 ## Building the zip files under Linux/macOS
 
 NB. `sed` must be `gnu-sed`
 
+- `jq` is required for the build. 
 - Clone this repo and execute the `scripts/makeportable.sh` script.
 
 ## Building the zip files under Windows
