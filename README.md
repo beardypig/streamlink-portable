@@ -11,7 +11,7 @@ To install simply unzip the zip file.
 
 A `streamlink.bat` is included in the zip file so that you can easily execute `streamlink`.
 
-The `config` file is read from the same directory as the `streamlink.bat` and is created when you first execute `streamlink.bat`, however it will not overwrite any existing config file so it an be editted and the changes not lost when updating.
+The `config` file is read from the same directory as the `streamlink.bat` and is created when you first execute `streamlink.bat`, however it will not overwrite any existing config file so it can be edited, and the changes not lost when updating.
 
 ## Building the zip files under Linux/macOS
 
