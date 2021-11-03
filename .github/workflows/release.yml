@@ -112,6 +112,18 @@ jobs:
           STREAMLINK_PYTHON_VERSION: 3.9.7
           STREAMLINK_PYTHON_ARCH: amd64
 
+      - name: Build win32 package (Python 3.10)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.10.0
+          STREAMLINK_PYTHON_ARCH: win32
+
+      - name: Build amd64 package (Python 3.10)
+        run: bash ./scripts/makeportable.sh
+        env:
+          STREAMLINK_PYTHON_VERSION: 3.10.0
+          STREAMLINK_PYTHON_ARCH: amd64
+
       - name: Create release ${{ steps.versions.outputs.streamlink_tag }}
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         uses: actions/create-release@latest
