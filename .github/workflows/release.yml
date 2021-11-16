@@ -113,12 +113,14 @@ jobs:
           STREAMLINK_PYTHON_ARCH: amd64
 
       - name: Build win32 package (Python 3.10)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.10.0
           STREAMLINK_PYTHON_ARCH: win32
 
       - name: Build amd64 package (Python 3.10)
+        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: bash ./scripts/makeportable.sh
         env:
           STREAMLINK_PYTHON_VERSION: 3.10.0

@@ -68,7 +68,6 @@ cp "${ROOT_DIR}/resources/streamlink.bat" "${bundle_dir}/streamlink.bat"
 cp "${ROOT_DIR}/NOTICE" "${bundle_dir}/NOTICE.txt"
 
 cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/config" "${bundle_dir}/config.template"
-cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/THIRD-PARTY.txt" "${bundle_dir}/THIRD-PARTY.txt"
 
 ASSETS_DATA=$(cat "${STREAMLINK_ASSETS_FILE}")
 
