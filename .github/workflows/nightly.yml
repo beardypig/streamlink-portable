@@ -28,6 +28,13 @@ jobs:
           path: streamlink
           fetch-depth: 300
 
+      - name: Check out streamlink ${{ steps.streamlink_windows_installer_tag.outputs.VERSION }}
+        uses: actions/checkout@v2
+        with:
+          repository: streamlink/windows-installer
+          path: windows-installer
+          fetch-depth: 300
+
       - name: Grab the latest tags for streamlink
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
         working-directory: streamlink
@@ -39,42 +46,6 @@ jobs:
 
       - name: Install dependencies
         run: pip install -U wheel pip
-
-      - name: Build win32 package (Python 3.6)
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.6.8
-          STREAMLINK_PYTHON_ARCH: win32
-
-      - name: Build amd64 package (Python 3.6)
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.6.8
-          STREAMLINK_PYTHON_ARCH: amd64
-
-      - name: Build win32 package (Python 3.7)
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.7.9
-          STREAMLINK_PYTHON_ARCH: win32
-
-      - name: Build amd64 package (Python 3.7)
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.7.9
-          STREAMLINK_PYTHON_ARCH: amd64
-
-      - name: Build win32 package (Python 3.8)
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.8.10
-          STREAMLINK_PYTHON_ARCH: win32
-
-      - name: Build amd64 package (Python 3.8)
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.8.10
-          STREAMLINK_PYTHON_ARCH: amd64
 
       - name: Build win32 package (Python 3.9)
         run: bash ./scripts/makeportable.sh

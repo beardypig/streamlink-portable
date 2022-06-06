@@ -20,8 +20,9 @@ jobs:
         with:
           script: |
             const streamlink_tag_name = await github.repos.listReleases({owner: "streamlink", repo: "streamlink"}).then(releases => releases.data.filter(r => !r.prerelease)[0].tag_name)
+            const streamlink_windows_installer_tag_name = await github.repos.listReleases({owner: "streamlink", repo: "streamlink"}).then(releases => releases.data.filter(r => !r.prerelease)[0].tag_name)
             const portable_tag_name = await github.repos.listReleases({owner: context.repo.owner, repo: context.repo.repo}).then(releases => releases.data.filter(r => !r.prerelease)[0].tag_name)
-            const result = {streamlink: streamlink_tag_name, portable: portable_tag_name};
+            const result = {streamlink: streamlink_tag_name, streamlink_windows_installer: streamlink_windows_installer_tag_name, portable: portable_tag_name};
             console.log(result);
             return result;
 
@@ -29,6 +30,7 @@ jobs:
         id: versions
         run: |
           echo ::set-output name=streamlink_tag::$(echo $json_var | jq -r '.streamlink')
+          echo ::set-output name=streamlink_windows_installer_tag::$(echo $json_var | jq -r '.streamlink_windows_installer')
           echo ::set-output name=streamlink_portable_tag::$(echo $json_var | jq -r '.portable')
         env:
           json_var: ${{ steps.releases.outputs.result }}
@@ -46,6 +48,14 @@ jobs:
           path: streamlink
           ref: ${{ steps.versions.outputs.streamlink_tag }}
 
+      # check out a specific streamlink windows-installer tag
+      - name: Check out streamlink ${{ steps.versions.outputs.streamlink_windows_installer_tag }}
+        uses: actions/checkout@v2
+        with:
+          repository: streamlink/windows-installer
+          path: windows-installer
+          ref: ${{ steps.versions.outputs.streamlink_windows_installer_tag }}
+
       - uses: actions/setup-python@v1
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         name: Setup Python
@@ -55,48 +65,6 @@ jobs:
       - name: Install dependencies
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
         run: pip install -U wheel pip
-
-      - name: Build win32 package (Python 3.6)
-        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.6.8
-          STREAMLINK_PYTHON_ARCH: win32
-
-      - name: Build amd64 package (Python 3.6)
-        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.6.8
-          STREAMLINK_PYTHON_ARCH: amd64
-
-      - name: Build win32 package (Python 3.7)
-        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.7.9
-          STREAMLINK_PYTHON_ARCH: win32
-
-      - name: Build amd64 package (Python 3.7)
-        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.7.9
-          STREAMLINK_PYTHON_ARCH: amd64
-
-      - name: Build win32 package (Python 3.8)
-        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.8.10
-          STREAMLINK_PYTHON_ARCH: win32
-
-      - name: Build amd64 package (Python 3.8)
-        if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag
-        run: bash ./scripts/makeportable.sh
-        env:
-          STREAMLINK_PYTHON_VERSION: 3.8.10
-          STREAMLINK_PYTHON_ARCH: amd64
 
       - name: Build win32 package (Python 3.9)
         if: steps.versions.outputs.streamlink_tag != steps.versions.outputs.streamlink_portable_tag

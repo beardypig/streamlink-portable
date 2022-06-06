@@ -22,29 +22,48 @@ NB. `sed` must be `gnu-sed`
 
 ## Building the zip files under Windows
 
-1. Install [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10). These instructions were done using WSL2 Ubuntu 20.04 LTS with `wsl --install -d Ubuntu-20.04`
+1. Install [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10). These instructions were done using WSL2 Ubuntu 20.04 LTS with `wsl --install -d Ubuntu-20.04`. A fresh install is assumed, and commands are executed as sudo to avoid additional configuration.
 
 2. Update and fetch pre-requisite dependencies:
 ```
-sudo apt update
-sudo apt upgrade
-sudo apt install python3-pip zip unzip jq
+sudo apt update --yes \
+    && sudo apt upgrade --yes \
+    && sudo apt install --yes python3-pip zip unzip jq python3-testresources
 ```
 
-3. Setup a working dir on a Windows mount, such as `mkdir /mnt/d/scratch` and `cd` into it.
-
-4. Clone this repo and [streamlink/streamlink](https://github.com/streamlink/streamlink) into a subdir called `streamlink` (assigned by default from repo name):
+3. Setup a working dir on a Windows mount. The example provided assumes a D: drive:
 ```
-git clone https://github.com/beardypig/streamlink-portable
-cd streamlink-portable
-git clone https://github.com/streamlink/streamlink
+mkdir -p /mnt/d/scratch \
+    && cd /mnt/d/scratch
 ```
 
-5. Execute script directly as bash: `sudo bash ./scripts/makeportable.sh`
+4. Clone this repo, [streamlink/streamlink](https://github.com/streamlink/streamlink), and the [streamlink/windows-installer](https://github.com/streamlink/windows-installer) into a subdir called `streamlink` (assigned by default from repo name):
+```
+sudo git clone https://github.com/beardypig/streamlink-portable \
+    && cd streamlink-portable \
+    && sudo git clone https://github.com/streamlink/streamlink \
+    && sudo git clone https://github.com/streamlink/windows-installer
+```
+
+5. Execute script directly as bash:
+```
+sudo bash ./scripts/makeportable.sh
+```
 
 6. Find result inside `dist` subfolder.
 
+7. Delete the working dir if it's no longer needed:
+```
+rm -rf /mnt/d/scratch
+```
+
 ## Changelog
+
+### 2022-06-05
+
+* Update Windows build instructions
+* Remove outdated Python versions from workflows (streamlink 4.0+ only supports Python 3.9+)
+* Move from internal win32 config file to new [streamlink/windows-installer](https://github.com/streamlink/windows-installer) repo
 
 ### 2021-10-26
 
