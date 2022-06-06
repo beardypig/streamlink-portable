@@ -26,7 +26,8 @@ mkdir -p "${bundle_dir}" "${dist_dir}" "${cache_dir}"
 STREAMLINK_PYTHON_ARCH=${STREAMLINK_PYTHON_ARCH:-win32}
 STREAMLINK_PYTHON_VERSION=${STREAMLINK_PYTHON_VERSION:-3.9.7}
 STREAMLINK_CHECKOUT_DIR="${ROOT_DIR}/streamlink"
-STREAMLINK_ASSETS_FILE="${STREAMLINK_CHECKOUT_DIR}/script/makeinstaller-assets.json"
+STREAMLINK_WINDOWS_INSTALLER_CHECKOUT_DIR="${ROOT_DIR}/windows-installer"
+STREAMLINK_ASSETS_FILE="${STREAMLINK_WINDOWS_INSTALLER_CHECKOUT_DIR}/config.json"
 PYTHON_PLATFORM=${STREAMLINK_PYTHON_ARCH}
 
 if [[ "${STREAMLINK_PYTHON_ARCH}" == "amd64" ]]; then
@@ -42,6 +43,7 @@ pushd "${STREAMLINK_CHECKOUT_DIR}" > /dev/null
 
 log "Downloading Python dependencies..."
 pip download --only-binary ":all:" --platform "${PYTHON_PLATFORM}" --python-version "${STREAMLINK_PYTHON_VERSION}" --implementation "cp" -d "${temp_dir}" "pycryptodome>=3.4.3,<4.0" "lxml>=4.6.4,<5.0" > /dev/null
+pip install "versioningit" > /dev/null
 pip install --upgrade -t "${packages_dir}" "pycountry" "setuptools" "requests>=2.26.0,<3.0" "websocket-client>=0.58.0" "PySocks!=1.5.7,>=1.5.6" "isodate" > /dev/null
 
 # create an sdist package to be "installed"
@@ -67,45 +69,57 @@ cp "${ROOT_DIR}/resources/streamlink-script.py" "${bundle_dir}/streamlink-script
 cp "${ROOT_DIR}/resources/streamlink.bat" "${bundle_dir}/streamlink.bat"
 cp "${ROOT_DIR}/NOTICE" "${bundle_dir}/NOTICE.txt"
 
-cp -r "${STREAMLINK_CHECKOUT_DIR}/win32/config" "${bundle_dir}/config.template"
+cp -r "${STREAMLINK_WINDOWS_INSTALLER_CHECKOUT_DIR}/files/config" "${bundle_dir}/config.template"
 
 ASSETS_DATA=$(cat "${STREAMLINK_ASSETS_FILE}")
 
 assets_prepare() {
     log "Preparing assets"
-    while read -r filename sha256 url; do
-        if ! [[ -f "${cache_dir}/${filename}" ]]; then
-            log "Downloading asset: ${filename}"
-            curl -L -o "${cache_dir}/${filename}" "${url}"
-        fi
-        echo "${sha256} ${cache_dir}/${filename}" | sha256sum --check -
-    done < <(jq -r '.[] | "\(.filename) \(.sha256) \(.url)"' <<< "${ASSETS_DATA}")
+    if [[ "${STREAMLINK_PYTHON_ARCH}" == "amd64" ]]; then
+        while read -r filename sha256 url; do
+            if ! [[ -f "${cache_dir}/${filename}" ]]; then
+                log "Downloading asset: ${filename}"
+                curl -L -o "${cache_dir}/${filename}" "${url}"
+            fi
+            echo "${sha256} ${cache_dir}/${filename}" | sha256sum --check -
+        done < <(jq -r '.assets."ffmpeg-x86_64" | "\(.filename) \(.sha256) \(.url)"' <<< "${ASSETS_DATA}")
+    else
+        while read -r filename sha256 url; do
+            if ! [[ -f "${cache_dir}/${filename}" ]]; then
+                log "Downloading asset: ${filename}"
+                curl -L -o "${cache_dir}/${filename}" "${url}"
+            fi
+            echo "${sha256} ${cache_dir}/${filename}" | sha256sum --check -
+        done < <(jq -r '.assets."ffmpeg-x86" | "\(.filename) \(.sha256) \(.url)"' <<< "${ASSETS_DATA}")
+    fi
 }
 
 assets_assemble() {
     log "Assembling files directory"
     local tmp=$(mktemp -d) && trap "rm -rf '${tmp}'" RETURN || exit 255
-    for ((i=$(jq length <<< "${ASSETS_DATA}") - 1; i >= 0; --i)); do
-        read -r type filename sourcedir targetdir \
-            < <(jq -r ".[$i] | \"\(.type) \(.filename) \(.sourcedir) \(.targetdir)\"" <<< "${ASSETS_DATA}")
-        case "${type}" in
-            zip)
-                mkdir -p "${tmp}/${i}"
-                unzip "${cache_dir}/${filename}" -d "${tmp}/${i}"
-                sourcedir="${tmp}/${i}/${sourcedir}"
-                ;;
-            *)
-                sourcedir="${cache_dir}"
-                ;;
-        esac
-        while read -r from to; do
-            install -v -D -T "${sourcedir}/${from}" "${bundle_dir}/${targetdir}/${to}"
-        done < <(jq -r ".[$i].files[] | \"\(.from) \(.to)\"" <<< "${ASSETS_DATA}")
-    done
+    read -r type filename sourcedir targetdir \
+        < <(jq -r ".assets.\"$1\" | \"\(.type) \(.filename) \(.sourcedir) \(.targetdir)\"" <<< "${ASSETS_DATA}")
+    case "${type}" in
+        zip)
+            mkdir -p "${tmp}/${i}"
+            unzip "${cache_dir}/${filename}" -d "${tmp}/${i}"
+            sourcedir="${tmp}/${i}/${sourcedir}"
+            ;;
+        *)
+            sourcedir="${cache_dir}"
+            ;;
+    esac
+    while read -r from to; do
+        install -v -D -T "${sourcedir}/${from}" "${bundle_dir}/${targetdir}/${to}"
+    done < <(jq -r ".assets.\"$1\".files[] | \"\(.from) \(.to)\"" <<< "${ASSETS_DATA}")
 }
 
 assets_prepare
-assets_assemble
+if [[ "${STREAMLINK_PYTHON_ARCH}" == "amd64" ]]; then
+    assets_assemble "ffmpeg-x86_64"
+else
+    assets_assemble "ffmpeg-x86"
+fi
 
 # remove the rtmpdump and ffmpeg template lines
 sed -i "/^rtmpdump=.*/d" "${bundle_dir}/config.template"
